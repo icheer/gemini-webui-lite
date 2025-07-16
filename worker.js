@@ -1543,7 +1543,7 @@ function getHtmlContent() {
             }
 
             // 流式完成
-            const answerKey = session.queston2 ? 'answer2' : 'answer';
+            const answerKey = session.question2 ? 'answer2' : 'answer';
             this.currentSession[answerKey] = this.streamingContent;
             this.saveData();
           } catch (error) {
