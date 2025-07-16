@@ -958,7 +958,7 @@ function getHtmlContent() {
               <div class="rendered-content markdown-body" v-html="renderMarkdown(currentSession.role)"></div>
             </div>
 
-            <!-- 问题显示 -->
+            <!-- 问题1 -->
             <div v-if="currentSession.question" class="content-section question-section">
               <h4>
                 <span>
@@ -973,7 +973,7 @@ function getHtmlContent() {
               <div class="rendered-content markdown-body" v-html="renderMarkdown(currentSession.question)"></div>
             </div>
 
-            <!-- 回答显示 -->
+            <!-- 回答1 -->
             <div v-if="currentSession.answer || isStreaming" class="content-section answer-section">
               <h4>
                 <span>
@@ -991,27 +991,60 @@ function getHtmlContent() {
             </div>
           </div>
 
-          <div v-if="isLoading && !isStreaming" class="loading">
-            <div class="spinner"></div>
-            <span>AI 正在思考中...</span>
+          <!-- 问题2 -->
+          <div v-if="currentSession.question2" class="content-section question-section">
+            <h4>
+              <span>
+                问题
+                <small v-if="currentSession.createdAt2">&emsp;{{ new Date(currentSession.createdAt2).toLocaleString()
+                  }}</small>
+              </span>
+              <button @click="copyToClipboard(currentSession.question2)" class="copy-btn" title="复制问题">
+                复制
+              </button>
+            </h4>
+            <div class="rendered-content markdown-body" v-html="renderMarkdown(currentSession.question2)"></div>
           </div>
 
-          <div v-if="errorMessage" class="error-message">
-            {{ errorMessage }}
+          <!-- 回答2 -->
+          <div v-if="currentSession.answer2 || isStreaming" class="content-section answer-section">
+            <h4>
+              <span>
+                回答
+                <small v-if="currentSession.model2">&emsp;{{ currentSession.model2 }}</small>
+              </span>
+              <button v-if="currentSession.answer2 && !isStreaming" @click="copyToClipboard(currentSession.answer2)"
+                class="copy-btn" title="复制回答">
+                复制
+              </button>
+            </h4>
+            <div class="rendered-content markdown-body streaming-answer"
+              v-html="renderMarkdown(isStreaming ? streamingContent : currentSession.answer2) + (isStreaming ? '<span class=\\'typewriter-cursor\\'></span>' : '')">
+            </div>
           </div>
         </div>
 
-        <!-- 输入区域 -->
-        <div class="input-area">
-          <textarea v-model="messageInput" @keydown="handleKeyDown" class="message-input"
-            :placeholder="inputPlaceholder" :disabled="!canInput" rows="1" ref="messageInputRef"></textarea>
-          <button v-if="isCurrentEnd" class="send-btn" @click="createNewSession">新会话</button>
-          <button v-else @click="sendMessage" :disabled="!canSend" class="send-btn">
-            发送
-          </button>
+        <div v-if="isLoading && !isStreaming" class="loading">
+          <div class="spinner"></div>
+          <span>AI 正在思考中...</span>
+        </div>
+
+        <div v-if="errorMessage" class="error-message">
+          {{ errorMessage }}
         </div>
       </div>
+
+      <!-- 输入区域 -->
+      <div class="input-area">
+        <textarea v-model="messageInput" @keydown="handleKeyDown" class="message-input" :placeholder="inputPlaceholder"
+          :disabled="!canInput" rows="1" ref="messageInputRef"></textarea>
+        <button v-if="isCurrentEnd" class="send-btn" @click="createNewSession">新会话</button>
+        <button v-else @click="sendMessage" :disabled="!canSend" class="send-btn">
+          发送
+        </button>
+      </div>
     </div>
+  </div>
   </div>
 
   <script>
@@ -1049,9 +1082,10 @@ function getHtmlContent() {
           return this.sessions.find(s => s.id === this.currentSessionId);
         },
         isCurrentEnd() {
-          return this.currentSession && this.currentSession.answer;
+          const session = this.currentSession;
+          return session && session.answer && session.answer2;
         },
-        isBlank() {
+        isTotallyBlank() {
           const list = this.sessions || [];
           return !list.some(s => s.answer);
         },
@@ -1067,11 +1101,12 @@ function getHtmlContent() {
           }
         },
         canInput() {
+          const session = this.currentSession;
           return (
             this.apiKey &&
             !this.isLoading &&
             !this.isStreaming &&
-            (!this.currentSession || !this.currentSession.answer)
+            (!session || !session.answer2)
           );
         },
         canSend() {
@@ -1145,7 +1180,7 @@ function getHtmlContent() {
             this.availableModels[0];
 
           // 首次向用户询问 API Key
-          if (!this.apiKey && this.isBlank) {
+          if (!this.apiKey && this.isTotallyBlank) {
             this.askApiKeyIfNeeded();
           }
         },
@@ -1195,11 +1230,15 @@ function getHtmlContent() {
           const newSession = {
             id: Date.now().toString(),
             title: '新会话',
+            model: '',
+            model2: '',
             role: '',
             question: '',
             answer: '',
-            model: '',
-            createdAt: new Date().toISOString()
+            question2: '',
+            answer2: '',
+            createdAt: new Date().toISOString(),
+            createdAt2: ''
           };
           this.sessions.unshift(newSession);
           this.currentSessionId = newSession.id;
@@ -1334,9 +1373,10 @@ function getHtmlContent() {
 
         async sendMessage() {
           if (!this.messageInput.trim() || !this.apiKey) return;
+          if (this.isLoading || this.isStreaming) return;
 
           // 如果当前会话已有回答，创建新会话
-          if (this.currentSession && this.currentSession.answer) {
+          if (this.currentSession && this.currentSession.answer2) {
             this.createNewSession();
           }
 
@@ -1348,29 +1388,65 @@ function getHtmlContent() {
           if (!this.currentSession) {
             this.createNewSession();
           }
+          const session = this.currentSession;
 
-          this.currentSession.question = userMessage;
+          // 判断是第一轮or第二轮问答
+          if (!session.answer) {
+            session.createdAt = new Date().toISOString();
+            session.model = this.selectedModel;
+            session.question = userMessage;
+            session.answer = '';
+            session.question2 = '';
+            session.answer2 = '';
+          } else {
+            session.createdAt2 = new Date().toISOString();
+            session.model2 = this.selectedModel;
+            session.question2 = userMessage;
+            session.answer2 = '';
+          }
           this.updateSessionTitle();
           this.saveData();
           this.scrollToBottom();
 
           // 发送到 Gemini API (流式)
-          if (this.isLoading || this.isStreaming) return;
-
+          const contents = [];
           this.isLoading = true;
           this.isStreaming = false;
           this.streamingContent = '';
           this.abortController = new AbortController();
 
-          try {
-            // 构建消息内容
-            let systemPrompt = '';
-            if (this.globalRolePrompt) {
-              systemPrompt =
-                '#角色设定:\\n' + this.globalRolePrompt + '\\n\\n---\\n\\n';
-            }
-            const fullMessage = systemPrompt + userMessage;
+          // 组装contents
+          if (this.globalRolePrompt.trim()) {
+            contents.push(
+              {
+                role: 'user',
+                parts: [
+                  {
+                    text: '#角色设定:\\n' + this.globalRolePrompt
+                  }
+                ]
+              },
+              {
+                role: 'model',
+                parts: [
+                  {
+                    text: '好的，我明白了。'
+                  }
+                ]
+              }
+            );
+          }
+          // 继续组装QA消息
+          ['question', 'answer', 'question2', 'answer2'].forEach(key => {
+            const text = session[key];
+            if (!text) return;
+            contents.push({
+              role: key.startsWith('question') ? 'user' : 'model',
+              parts: [{ text }]
+            });
+          });
 
+          try {
             const url =
               '/v1beta/models/' +
               this.selectedModel +
@@ -1383,15 +1459,7 @@ function getHtmlContent() {
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                contents: [
-                  {
-                    parts: [
-                      {
-                        text: fullMessage
-                      }
-                    ]
-                  }
-                ],
+                contents,
                 generationConfig: {
                   temperature: 1,
                   topP: 1
@@ -1451,7 +1519,7 @@ function getHtmlContent() {
                           data.candidates[0].content.parts[0]?.text || '';
                         if (delta) {
                           this.streamingContent += delta;
-                          this.scrollToBottom();
+                          // this.scrollToBottom();
                         }
                       }
                     } catch (parseError) {
@@ -1499,7 +1567,7 @@ function getHtmlContent() {
             this.isStreaming = false;
             this.streamingContent = '';
             this.abortController = null;
-            this.scrollToBottom();
+            // this.scrollToBottom();
           }
         },
 
