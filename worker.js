@@ -986,7 +986,7 @@ function getHtmlContent() {
                 </button>
               </h4>
               <div class="rendered-content markdown-body streaming-answer"
-                v-html="renderMarkdown(isStreaming ? streamingContent : currentSession.answer) + (isStreaming ? '<span class=\\'typewriter-cursor\\'></span>' : '')">
+                v-html="renderMarkdown(isStreaming && !currentSession.question2 ? streamingContent : currentSession.answer) + (isStreaming ? '<span class=\\'typewriter-cursor\\'></span>' : '')">
               </div>
             </div>
 
@@ -1006,7 +1006,8 @@ function getHtmlContent() {
             </div>
 
             <!-- 回答2 -->
-            <div v-if="currentSession.answer2 || isStreaming" class="content-section answer-section">
+            <div v-if="currentSession.question2 && (currentSession.answer2 || isStreaming)"
+              class="content-section answer-section">
               <h4>
                 <span>
                   回答
