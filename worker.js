@@ -1412,19 +1412,17 @@ function getHtmlContent() {
           }).then(canvas => {
             // 检测是否为微信浏览器环境
             const userAgent = navigator.userAgent.toLowerCase();
-            const isWechat = userAgent.includes('micromessenger');
-
+            const isWechat = userAgent.includes('micromessenger') && userAgent.includes('mobile');
             if (isWechat) {
               // 微信环境：显示图片让用户长按保存
               const imageDataUrl = canvas.toDataURL('image/png');
-
               Swal.fire({
-                title: '长按图片保存或转发',
+                title: '长按图片保存',
                 html: '<img src="' + imageDataUrl + '" style="max-width: 100%; height: auto; border-radius: 8px;" />',
                 showConfirmButton: true,
                 confirmButtonText: '我知道了',
-                width: '90%',
-                padding: '1em',
+                width: '94%',
+                padding: '0.25em',
                 customClass: {
                   htmlContainer: 'swal-image-container'
                 }
