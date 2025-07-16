@@ -1093,7 +1093,7 @@ function getHtmlContent() {
             return '请先在左上角设置 API Key';
           } else if (this.isLoading || this.isStreaming) {
             return 'AI 正在思考中...';
-          } else if (this.currentSession && this.currentSession.answer) {
+          } else if (this.currentSession && this.currentSession.answer2) {
             return '当前会话已结束';
           } else {
             return '输入您的问题...';
@@ -1388,6 +1388,7 @@ function getHtmlContent() {
             this.createNewSession();
           }
           const session = this.currentSession;
+          session.role = this.globalRolePrompt.trim();
 
           // 判断是第一轮or第二轮问答
           if (!session.answer) {
@@ -1541,9 +1542,8 @@ function getHtmlContent() {
             }
 
             // 流式完成
-            this.currentSession.answer = this.streamingContent;
-            this.currentSession.role = this.globalRolePrompt;
-            this.currentSession.model = this.selectedModel;
+            const answerKey = session.queston2 ? 'answer2' : 'answer';
+            this.currentSession[answerKey] = this.streamingContent;
             this.saveData();
           } catch (error) {
             console.error('Error:', error);
