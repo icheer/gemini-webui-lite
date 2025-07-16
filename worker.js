@@ -1410,25 +1410,46 @@ function getHtmlContent() {
             height: null,
             width: null
           }).then(canvas => {
-            // 创建下载链接
-            const link = document.createElement('a');
-            const regex = new RegExp('[\/\:\s]', 'g');
-            link.download = 'gemini-chat-' + new Date().toLocaleString().replace(regex, '-') + '.png';
-            link.href = canvas.toDataURL('image/png');
+            // 检测是否为微信浏览器环境
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isWechat = userAgent.includes('micromessenger');
 
-            // 触发下载
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            if (isWechat) {
+              // 微信环境：显示图片让用户长按保存
+              const imageDataUrl = canvas.toDataURL('image/png');
 
-            // 关闭加载提示并显示成功消息
-            Swal.fire({
-              title: '截图成功',
-              text: '图片已保存到下载文件夹',
-              icon: 'success',
-              timer: 2000,
-              showConfirmButton: false
-            });
+              Swal.fire({
+                title: '长按图片保存或转发',
+                html: '<img src="' + imageDataUrl + '" style="max-width: 100%; height: auto; border-radius: 8px;" />',
+                showConfirmButton: true,
+                confirmButtonText: '我知道了',
+                width: '90%',
+                padding: '1em',
+                customClass: {
+                  htmlContainer: 'swal-image-container'
+                }
+              });
+            } else {
+              // 非微信环境：使用原有的下载逻辑
+              const link = document.createElement('a');
+              const regex = new RegExp('[\/\:\\s]', 'g');
+              link.download = 'gemini-chat-' + new Date().toLocaleString().replace(regex, '-') + '.png';
+              link.href = canvas.toDataURL('image/png');
+
+              // 触发下载
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+
+              // 显示成功消息
+              Swal.fire({
+                title: '截图成功',
+                text: '图片已保存到下载文件夹',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+              });
+            }
           }).catch(error => {
             console.error('截图失败:', error);
             Swal.fire({
