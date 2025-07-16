@@ -1246,7 +1246,6 @@ function getHtmlContent() {
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
             confirmButtonText: '删除',
             cancelButtonText: '取消',
             reverseButtons: true
