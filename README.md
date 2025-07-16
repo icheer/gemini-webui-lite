@@ -61,18 +61,7 @@
 
    - 将项目代码上传到您的 GitHub 仓库
 
-2. **配置代码（可选）**
-
-   - 如需密码共享功能，可编辑 `worker.js` 文件：
-
-   ```javascript
-   const SECRET_PASSWORD = 'your-shared-password'; // 设置共享密码
-   const GEMINI_API_KEYS = 'key1,key2,key3'; // API Key 列表，逗号分隔
-   ```
-
-   - 或者使用环境变量配置（推荐，无需修改源代码）
-
-3. **部署到 Deno Deploy**
+2. **部署到 Deno Deploy**
 
    - 访问 [Deno Deploy](https://dash.deno.com/)
    - 使用 GitHub 账号登录
@@ -81,21 +70,21 @@
    - 设置入口文件为 `worker.js`
    - 点击 "Deploy"
 
-4. **配置环境变量（可选但推荐）**
+3. **配置环境变量（可选但推荐）**
 
    - 在 Deno Deploy 项目设置中添加环境变量：
      - `SECRET_PASSWORD`: 共享密码
      - `GEMINI_API_KEYS`: API Key 列表（逗号分隔）
    - 环境变量优先级高于代码中的硬编码值
 
-5. **绑定自定义域名（可选，推荐）**
+4. **绑定自定义域名（可选，推荐）**
 
    - 在项目设置中点击 "Domains"
    - 添加您的自定义域名
    - 按照提示配置 DNS 记录
    - Deno Deploy 会自动提供 SSL 证书
 
-6. **测试部署**
+5. **测试部署**
    - 访问您的 Deno Deploy 域名（如：`https://your-project.deno.dev`）
    - 或访问您的自定义域名
    - 输入共享密码测试功能
@@ -121,6 +110,8 @@
    const SECRET_PASSWORD = 'your-shared-password'; // 设置共享密码
    const GEMINI_API_KEYS = 'key1,key2,key3'; // API Key 列表，逗号分隔
    ```
+
+   - 更推荐以环境变量方式配置以上 2 个参数
 
 3. **绑定自定义域名**
 
@@ -228,13 +219,14 @@ curl -X POST "https://your-domain.com/proxy/v1beta/models/gemini-2.5-pro:streamG
 如果不想使用环境变量，也可以直接在 `worker.js` 中修改：
 
 ```javascript
+// ⚠️ 注意: 当您fork项目并且仓库为公开时，请务必谨慎操作，以免您包含Gemini密钥的Commit被暴露在公网，造成Key泄露的情况
 // ⚠️ 注意: 仅当您有密码共享需求时才需要配置这些变量
 // 否则无需配置，默认会使用 WebUI 填写的 API Key 进行 Gemini 请求
 
 // 共享密码 - 您和朋友约定的密码
 const SECRET_PASSWORD = 'your-shared-password';
 
-// Gemini API Key 列表 - 多个用逗号分隔，支持自动轮换
+// Gemini API Key 列表 - 多个用逗号分隔，支持自动轮换，不建议这样明文写在代码里，谨防Key泄露！
 const GEMINI_API_KEYS = 'Key1,Key2,Key3';
 ```
 
