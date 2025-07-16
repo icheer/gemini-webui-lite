@@ -1243,21 +1243,26 @@ function getHtmlContent() {
 
         createNewSession() {
           if (this.isLoading) return;
-          const newSession = {
-            id: Date.now().toString(),
-            title: '新会话',
-            model: '',
-            model2: '',
-            role: '',
-            question: '',
-            answer: '',
-            question2: '',
-            answer2: '',
-            createdAt: new Date().toISOString(),
-            createdAt2: ''
-          };
-          this.sessions.unshift(newSession);
-          this.currentSessionId = newSession.id;
+          const firstSession = this.sessions[0];
+          if (firstSession && !firstSession.question) {
+            this.currentSessionId = firstSession.id;
+          } else {
+            const newSession = {
+              id: Date.now().toString(),
+              title: '新会话',
+              model: '',
+              model2: '',
+              role: '',
+              question: '',
+              answer: '',
+              question2: '',
+              answer2: '',
+              createdAt: new Date().toISOString(),
+              createdAt2: ''
+            };
+            this.sessions.unshift(newSession);
+            this.currentSessionId = newSession.id;
+          }
           this.saveData();
           // 移动端创建新会话后隐藏侧边栏
           if (this.isMobile) {
