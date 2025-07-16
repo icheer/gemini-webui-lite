@@ -140,6 +140,7 @@ function getHtmlContent() {
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://unpkg.com/sweetalert2@11"></script>
   <script src="https://unpkg.com/showdown@2.1.0/dist/showdown.min.js"></script>
+  <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/github-markdown-css/github-markdown-light.css" />
   <script>
     // IndexedDB 封装
@@ -228,6 +229,10 @@ function getHtmlContent() {
       display: none;
     }
 
+    button {
+      user-select: none;
+    }
+
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -259,6 +264,7 @@ function getHtmlContent() {
     }
 
     .header {
+      position: relative;
       padding: 15px;
       border-bottom: 1px solid #e1e5e9;
       display: flex;
@@ -266,6 +272,30 @@ function getHtmlContent() {
       align-items: center;
       gap: 15px;
       flex-wrap: wrap;
+    }
+
+    .header .share-btn {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 18px;
+      margin: auto 0;
+      height: 32px;
+      background: none;
+      border: 1px solid #e1e5e9;
+      color: #666;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .header .share-btn:hover {
+      background: #f8f9fa;
+      border-color: #a8edea;
+      color: #2d3748;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
 
     .api-key-section {
@@ -639,6 +669,12 @@ function getHtmlContent() {
         gap: 10px;
       }
 
+      .header .share-btn {
+        top: 15px;
+        bottom: auto;
+        margin: 0;
+      }
+
       .model-select {
         width: 100%;
       }
@@ -915,6 +951,7 @@ function getHtmlContent() {
               {{ model }}
             </option>
           </select>
+          <button v-if="currentSession && currentSession.answer" class="share-btn" @click="shareSession">分享问答</button>
         </div>
 
         <!-- 消息区域 -->
@@ -1340,6 +1377,68 @@ function getHtmlContent() {
                 confirmButtonText: '确定'
               });
             });
+        },
+
+        shareSession() {
+          const sessionContent = document.querySelector('.session-content');
+          if (!sessionContent) {
+            Swal.fire({
+              title: '截图失败',
+              text: '未找到要截图的内容',
+              icon: 'error',
+              confirmButtonText: '确定'
+            });
+            return;
+          }
+
+          // 显示加载提示
+          Swal.fire({
+            title: '正在生成截图...',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+
+          // 使用html2canvas截图
+          html2canvas(sessionContent, {
+            backgroundColor: '#ffffff',
+            scale: 2, // 提高清晰度
+            useCORS: true,
+            allowTaint: false,
+            logging: false,
+            width: sessionContent.scrollWidth,
+            height: sessionContent.scrollHeight,
+            scrollX: 0,
+            scrollY: 0
+          }).then(canvas => {
+            // 创建下载链接
+            const link = document.createElement('a');
+            link.download = `gemini-chat-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.png`;
+            link.href = canvas.toDataURL('image/png');
+
+            // 触发下载
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // 关闭加载提示并显示成功消息
+            Swal.fire({
+              title: '截图成功',
+              text: '图片已保存到下载文件夹',
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          }).catch(error => {
+            console.error('截图失败:', error);
+            Swal.fire({
+              title: '截图失败',
+              text: '生成图片时出现错误: ' + error.message,
+              icon: 'error',
+              confirmButtonText: '确定'
+            });
+          });
         },
 
         updateSessionTitle() {
