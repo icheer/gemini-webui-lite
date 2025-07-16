@@ -1,60 +1,76 @@
-const SECRET_PASSWORD = 'xxxxxxxx'; // 这里是您和您的朋友共享的密码,例如 'yijiaren.008
-const UNIVERSAL_API_KEY = 'AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // 这里是您的Gemini API密钥
+const SERVER_TYPE = typeof Deno !== 'undefined' ? 'DENO' : 'CF';
+const isDeno = SERVER_TYPE === 'DENO';
+
+// 这里是您和您的朋友共享的密码, 优先使用环境变量, 双竖线后可以直接在代码中固定写死(免得去管理面板配置环境变量了) 例如 'yijiaren.308'
+const SECRET_PASSWORD = (isDeno ? Deno.env.get('SECRET_PASSWORD') : env.SECRET_PASSWORD) || `yijiaren.${~~(Math.random() * 1000)}`;
+// 这里是您的Gemini API密钥清单, 多个时使用逗号分隔, 会轮询(随机)使用, 同样也是优先使用环境变量, 其次使用代码中写死的值
+const GEMINI_API_KEYS = (isDeno ? Deno.env.get('GEMINI_API_KEYS') : env.GEMINI_API_KEYS) || 'AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,AIzayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'
+const GEMINI_API_KEY_LIST = GEMINI_API_KEYS.split(',');
 const htmlContent = getHtmlContent();
 
+// 通用的请求处理函数
+async function handleRequest(request, env = {}) {
+  const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com';
 
+  // 1. 解析和验证请求
+  const url = new URL(request.url);
+  const apiPath = url.pathname.replace('/proxy', '');
+
+  // 处理HTML页面请求
+  if (apiPath === '/' || apiPath === '/index.html') {
+    return new Response(htmlContent, {
+      headers: {
+        "Content-Type": "text/html;charset=UTF-8",
+        "Cache-Control": "public, max-age=86400" // 缓存1d
+      }
+    });
+  }
+
+  if (!apiPath.startsWith('/v1beta/')) {
+    return createErrorResponse(apiPath + 'Invalid API path. Must start with /v1beta/', 400);
+  }
+
+  // 2. 获取和验证API密钥
+  let apiKey = url.searchParams.get('key') || request.headers.get('x-goog-api-key');
+  let urlSearch = url.searchParams.toString();
+  if (!apiKey) {
+    return createErrorResponse('Missing API key. Provide via ?key= parameter or x-goog-api-key header', 401);
+  } else if (apiKey === SECRET_PASSWORD) {
+    apiKey = getRandomApiKey();
+    urlSearch = urlSearch.replace(`key=${SECRET_PASSWORD}`, `key=${apiKey}`);
+  }
+
+  // 3. 构建请求
+  const targetUrl = `${GEMINI_API_BASE}${apiPath}?${urlSearch}`;
+  const proxyRequest = buildProxyRequest(request, apiKey);
+
+  // 4. 发起请求并处理响应
+  try {
+    const response = await fetch(targetUrl, proxyRequest);
+
+    // 直接透传响应 - 无缓冲流式处理
+    return new Response(response.body, {
+      status: response.status,
+      headers: response.headers
+    });
+
+  } catch (error) {
+    console.error('Proxy request failed:', error);
+    return createErrorResponse('Proxy request failed', 502);
+  }
+}
+
+// Cloudflare Workers 导出
 export default {
   async fetch(request, env) {
-    const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com';
-
-    // 1. 解析和验证请求
-    const url = new URL(request.url);
-    const apiPath = url.pathname.replace('/proxy', '');
-
-    // 处理HTML页面请求
-    if (apiPath === '/' || apiPath === '/index.html') {
-      return new Response(htmlContent, {
-        headers: {
-          "Content-Type": "text/html;charset=UTF-8",
-          "Cache-Control": "public, max-age=86400" // 缓存1d
-        }
-      });
-    }
-
-    if (!apiPath.startsWith('/v1beta/')) {
-      return createErrorResponse(apiPath + 'Invalid API path. Must start with /v1beta/', 400);
-    }
-
-    // 2. 获取和验证API密钥
-    let apiKey = url.searchParams.get('key') || request.headers.get('x-goog-api-key');
-    let urlSearch = url.searchParams.toString();
-    if (!apiKey) {
-      return createErrorResponse('Missing API key. Provide via ?key= parameter or x-goog-api-key header', 401);
-    } else if (apiKey === SECRET_PASSWORD) {
-      apiKey = UNIVERSAL_API_KEY;
-      urlSearch = urlSearch.replace(`key=${SECRET_PASSWORD}`, `key=${apiKey}`);
-    }
-
-    // 3. 构建请求
-    const targetUrl = `${GEMINI_API_BASE}${apiPath}?${urlSearch}`;
-    const proxyRequest = buildProxyRequest(request, apiKey);
-
-    // 4. 发起请求并处理响应
-    try {
-      const response = await fetch(targetUrl, proxyRequest);
-
-      // 直接透传响应 - 无缓冲流式处理
-      return new Response(response.body, {
-        status: response.status,
-        headers: response.headers
-      });
-
-    } catch (error) {
-      console.error('Proxy request failed:', error);
-      return createErrorResponse('Proxy request failed', 502);
-    }
+    return handleRequest(request, env);
   }
 };
+
+// Deno Deploy 支持
+if (typeof Deno !== 'undefined') {
+  Deno.serve(handleRequest);
+}
 
 /**
  * 构建代理请求配置
@@ -102,6 +118,12 @@ function createErrorResponse(message, status) {
       headers: { 'Content-Type': 'application/json' }
     }
   );
+}
+
+function getRandomApiKey() {
+  const len = GEMINI_API_KEY_LIST.length;
+  const idx = ~~(Math.random() * len);
+  return GEMINI_API_KEY_LIST[idx];
 }
 
 function getHtmlContent() {
