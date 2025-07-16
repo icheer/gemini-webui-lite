@@ -989,37 +989,37 @@ function getHtmlContent() {
                 v-html="renderMarkdown(isStreaming ? streamingContent : currentSession.answer) + (isStreaming ? '<span class=\\'typewriter-cursor\\'></span>' : '')">
               </div>
             </div>
-          </div>
 
-          <!-- 问题2 -->
-          <div v-if="currentSession.question2" class="content-section question-section">
-            <h4>
-              <span>
-                问题
-                <small v-if="currentSession.createdAt2">&emsp;{{ new Date(currentSession.createdAt2).toLocaleString()
-                  }}</small>
-              </span>
-              <button @click="copyToClipboard(currentSession.question2)" class="copy-btn" title="复制问题">
-                复制
-              </button>
-            </h4>
-            <div class="rendered-content markdown-body" v-html="renderMarkdown(currentSession.question2)"></div>
-          </div>
+            <!-- 问题2 -->
+            <div v-if="currentSession.question2" class="content-section question-section">
+              <h4>
+                <span>
+                  问题
+                  <small v-if="currentSession.createdAt2">&emsp;{{ new Date(currentSession.createdAt2).toLocaleString()
+                    }}</small>
+                </span>
+                <button @click="copyToClipboard(currentSession.question2)" class="copy-btn" title="复制问题">
+                  复制
+                </button>
+              </h4>
+              <div class="rendered-content markdown-body" v-html="renderMarkdown(currentSession.question2)"></div>
+            </div>
 
-          <!-- 回答2 -->
-          <div v-if="currentSession.answer2 || isStreaming" class="content-section answer-section">
-            <h4>
-              <span>
-                回答
-                <small v-if="currentSession.model2">&emsp;{{ currentSession.model2 }}</small>
-              </span>
-              <button v-if="currentSession.answer2 && !isStreaming" @click="copyToClipboard(currentSession.answer2)"
-                class="copy-btn" title="复制回答">
-                复制
-              </button>
-            </h4>
-            <div class="rendered-content markdown-body streaming-answer"
-              v-html="renderMarkdown(isStreaming ? streamingContent : currentSession.answer2) + (isStreaming ? '<span class=\\'typewriter-cursor\\'></span>' : '')">
+            <!-- 回答2 -->
+            <div v-if="currentSession.answer2 || isStreaming" class="content-section answer-section">
+              <h4>
+                <span>
+                  回答
+                  <small v-if="currentSession.model2">&emsp;{{ currentSession.model2 }}</small>
+                </span>
+                <button v-if="currentSession.answer2 && !isStreaming" @click="copyToClipboard(currentSession.answer2)"
+                  class="copy-btn" title="复制回答">
+                  复制
+                </button>
+              </h4>
+              <div class="rendered-content markdown-body streaming-answer"
+                v-html="renderMarkdown(isStreaming ? streamingContent : currentSession.answer2) + (isStreaming ? '<span class=\\'typewriter-cursor\\'></span>' : '')">
+              </div>
             </div>
           </div>
         </div>
