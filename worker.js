@@ -1430,7 +1430,7 @@ function getHtmlContent() {
             } else {
               // 非微信环境：使用原有的下载逻辑
               const link = document.createElement('a');
-              const regex = new RegExp('[\/\:\\s]', 'g');
+              const regex = new RegExp('[\/\: ]', 'g');
               link.download = 'gemini-chat-' + new Date().toLocaleString().replace(regex, '-') + '.png';
               link.href = canvas.toDataURL('image/png');
 
