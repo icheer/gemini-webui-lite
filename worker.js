@@ -259,7 +259,7 @@ function getHtmlContent() {
     }
 
     .header {
-      padding: 20px;
+      padding: 15px;
       border-bottom: 1px solid #e1e5e9;
       display: flex;
       justify-content: between;
@@ -760,6 +760,7 @@ function getHtmlContent() {
     .content-section h4 small {
       color: #6c757d;
       font-size: 12px;
+      font-weight: normal;
     }
 
     .role-section {
@@ -971,7 +972,7 @@ function getHtmlContent() {
             <div v-if="currentSession.question2" class="content-section question-section">
               <h4>
                 <span>
-                  问题
+                  追问
                   <small v-if="currentSession.createdAt2">&emsp;{{ new
                     Date(currentSession.createdAt2).toLocaleString() }}</small>
                 </span>
