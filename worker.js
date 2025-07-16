@@ -768,8 +768,8 @@ function getHtmlContent() {
 
     .question-section {
       background: linear-gradient(135deg,
-          rgba(168, 237, 234, 0.1),
-          rgba(254, 214, 227, 0.1));
+          rgba(168, 237, 234, 0.18),
+          rgba(254, 214, 227, 0.18));
     }
 
     .answer-section {
