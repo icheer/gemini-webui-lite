@@ -8,7 +8,7 @@
 一个简单易用的 Deno Deploy / Cloudflare Worker 程序，让您能够快速部署自己的 Gemini AI 代理服务。只需要一个域名和 Gemini API Key，即可免费为家人朋友提供 AI 问答服务。
 
 > 🎯 **推荐使用 Deno Deploy 部署**  
-> 由于国内访问 Cloudflare Workers 大概率优先匹配到 HK 节点，访问可能不稳定，强烈推荐使用 **Deno Deploy** 部署本服务，访问速度更快更稳定！
+> 由于国内访问 Cloudflare Workers 大概率优先匹配到 HK 节点，访问可能不稳定，强烈推荐使用 **Deno Deploy** 部署本服务！
 
 请合理使用 AI 资源，避免滥用！
 
@@ -55,7 +55,7 @@
 
 **🎯 方式一：Deno Deploy（推荐）**
 
-> ⚡ 推荐使用 Deno Deploy，因为国内访问速度更快，部署更简单！
+> ⚡ 推荐使用 Deno Deploy，访问 Gemini 更稳定。
 
 1. **Fork 项目到您的 GitHub**
 
@@ -307,7 +307,7 @@ availableModels: [
 ## 🙋‍♂️ 常见问题
 
 - **Q: 为什么推荐 Deno Deploy 而不是 Cloudflare Workers？**
-- _A: 国内访问 Cloudflare Workers 大概率匹配到香港节点，访问速度可能不稳定。Deno Deploy 在国内访问更快更稳定，且部署流程更简单。_
+- _A: 国内访问 Cloudflare Workers 大概率匹配到香港节点，来自香港的请求会被 Gemini 拒绝。Deno Deploy 仅在海外有节点，不存在此问题。_
 
 - **Q: 两个平台的功能有区别吗？**
 - _A: 功能完全相同，只是部署方式不同。代码都支持流式响应、密钥轮换、Web 界面等全部特性。_
