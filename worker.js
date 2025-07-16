@@ -1403,20 +1403,12 @@ function getHtmlContent() {
           // 使用html2canvas截图
           html2canvas(sessionContent, {
             backgroundColor: '#ffffff',
-            scale: 2, // 提高清晰度
+            scale: 2,
             useCORS: true,
             allowTaint: false,
             logging: false,
-            // 移除固定的width和height设置，让html2canvas自动计算
-            // width: sessionContent.scrollWidth,
-            // height: sessionContent.scrollHeight,
-            scrollX: 0,
-            scrollY: 0,
-            // 确保捕获完整内容
-            windowWidth: sessionContent.scrollWidth,
-            windowHeight: sessionContent.scrollHeight,
-            // 处理可能的溢出内容
-            foreignObjectRendering: true
+            height: null,
+            width: null
           }).then(canvas => {
             // 创建下载链接
             const link = document.createElement('a');
