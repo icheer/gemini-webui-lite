@@ -1022,29 +1022,28 @@ function getHtmlContent() {
               </div>
             </div>
           </div>
+
+          <div v-if="isLoading && !isStreaming" class="loading">
+            <div class="spinner"></div>
+            <span>AI 正在思考中...</span>
+          </div>
+
+          <div v-if="errorMessage" class="error-message">
+            {{ errorMessage }}
+          </div>
         </div>
 
-        <div v-if="isLoading && !isStreaming" class="loading">
-          <div class="spinner"></div>
-          <span>AI 正在思考中...</span>
+        <!-- 输入区域 -->
+        <div class="input-area">
+          <textarea v-model="messageInput" @keydown="handleKeyDown" class="message-input"
+            :placeholder="inputPlaceholder" :disabled="!canInput" rows="1" ref="messageInputRef"></textarea>
+          <button v-if="isCurrentEnd" class="send-btn" @click="createNewSession">新会话</button>
+          <button v-else @click="sendMessage" :disabled="!canSend" class="send-btn">
+            发送
+          </button>
         </div>
-
-        <div v-if="errorMessage" class="error-message">
-          {{ errorMessage }}
-        </div>
-      </div>
-
-      <!-- 输入区域 -->
-      <div class="input-area">
-        <textarea v-model="messageInput" @keydown="handleKeyDown" class="message-input" :placeholder="inputPlaceholder"
-          :disabled="!canInput" rows="1" ref="messageInputRef"></textarea>
-        <button v-if="isCurrentEnd" class="send-btn" @click="createNewSession">新会话</button>
-        <button v-else @click="sendMessage" :disabled="!canSend" class="send-btn">
-          发送
-        </button>
       </div>
     </div>
-  </div>
   </div>
 
   <script>
