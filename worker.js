@@ -1414,7 +1414,8 @@ function getHtmlContent() {
           }).then(canvas => {
             // 创建下载链接
             const link = document.createElement('a');
-            link.download = `gemini-chat-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.png`;
+            const regex = new RegExp('[\/\:\s]', 'g');
+            link.download = 'gemini-chat-' + new Date().toLocaleString().replace(regex, '-') + '.png';
             link.href = canvas.toDataURL('image/png');
 
             // 触发下载
