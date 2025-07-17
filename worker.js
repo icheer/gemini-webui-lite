@@ -496,7 +496,7 @@ function getHtmlContent() {
       display: block;
       width: 100%;
       min-height: 44px;
-      max-height: 120px;
+      max-height: 144px;
       padding: 9px 16px;
       padding-right: 40px;
       border: 2px solid #e1e5e9;
@@ -719,8 +719,8 @@ function getHtmlContent() {
       }
 
       .input-area {
-        padding: 15px;
-        gap: 8px;
+        padding: 12px;
+        gap: 6px;
       }
 
       .input-wrapper {
@@ -1732,7 +1732,7 @@ function getHtmlContent() {
             if (textarea) {
               textarea.style.height = 'auto';
               textarea.style.height =
-                Math.min(textarea.scrollHeight, 120) + 'px';
+                Math.min(textarea.scrollHeight, 144) + 'px';
             }
           });
         },
