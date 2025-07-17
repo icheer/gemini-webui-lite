@@ -1223,7 +1223,6 @@ function getHtmlContent() {
         });
 
         await this.loadData();
-        this.autoResizeTextarea();
         if (this.sessions.length === 0) {
           this.createNewSession();
         }
@@ -1819,12 +1818,10 @@ function getHtmlContent() {
         clearInput() {
           this.messageInput = '';
           this.saveDraftToCurrentSession();
-          this.autoResizeTextarea();
         },
 
         // 输入变化时的处理
         onInputChange() {
-          this.autoResizeTextarea();
           this.saveDraftToCurrentSession();
         },
 
@@ -1843,10 +1840,12 @@ function getHtmlContent() {
           } else {
             this.messageInput = '';
           }
-          this.autoResizeTextarea();
         }
       },
       watch: {
+        messageInput() {
+          this.autoResizeTextarea();
+        },
         streamingContent() {
           this.stickToBottom();
         }
