@@ -746,7 +746,7 @@ function getHtmlContent() {
       }
 
       .header .share-btn {
-        top: 15px;
+        top: 16px;
         bottom: auto;
         margin: 0;
       }
