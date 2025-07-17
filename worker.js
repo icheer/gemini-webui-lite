@@ -827,6 +827,7 @@ function getHtmlContent() {
     .role-textarea {
       width: 100%;
       min-height: 90px;
+      max-height: 50vh;
       padding: 12px;
       border: 2px solid #e1e5e9;
       border-radius: 8px;
