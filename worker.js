@@ -860,25 +860,6 @@ function getHtmlContent() {
       white-space-collapse: collapse;
     }
 
-    .rendered-content h1,
-    .rendered-content h2,
-    .rendered-content h3,
-    .rendered-content h4,
-    .rendered-content h5,
-    .rendered-content h6 {
-      margin: 1em 0 0.5em 0;
-      color: #333;
-    }
-
-    .rendered-content h1:first-child,
-    .rendered-content h2:first-child,
-    .rendered-content h3:first-child,
-    .rendered-content h4:first-child,
-    .rendered-content h5:first-child,
-    .rendered-content h6:first-child {
-      margin-top: 0;
-    }
-
     .rendered-content p {
       margin: 0.5em 0;
     }
@@ -912,15 +893,6 @@ function getHtmlContent() {
       margin: 1em 0;
       padding-left: 1em;
       color: #666;
-    }
-
-    .rendered-content ul,
-    .rendered-content ol {
-      margin: 0.5em 0 0.5em 2em;
-    }
-
-    .rendered-content li {
-      margin: 0.25em 0;
     }
 
     .streaming-answer {
