@@ -1,3 +1,5 @@
+const isDeno = typeof Deno !== 'undefined'
+const isCf = !isDeno && typeof Request !== 'undefined' && typeof Request.cf !== 'undefined';
 // ⚠️注意: 仅当您有密码共享需求时才需要配置 SECRET_PASSWORD 和 GEMINI_API_KEYS 这两个环境变量! 否则您无需配置, 默认会使用WebUI填写的API Key进行gemini请求
 // 这里是您和您的朋友共享的密码, 优先使用环境变量, 双竖线后可以直接硬编码(例如 'yijiaren.308' 免得去管理面板配置环境变量了, 但极不推荐这么做!) 
 const SECRET_PASSWORD = getEnv('SECRET_PASSWORD') || `yijiaren.${~~(Math.random() * 1000)}`;
@@ -9,8 +11,6 @@ const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com';
 const htmlContent = getHtmlContent();
 
 // 获取环境变量
-const isDeno = typeof Deno !== 'undefined'
-const isCf = !isDeno && typeof Request !== 'undefined' && typeof Request.cf !== 'undefined';
 const SERVER_TYPE = isDeno ? 'DENO' : (isCf ? 'CF' : 'VPS');
 function getEnv(key) {
   if (isDeno) {
