@@ -897,7 +897,7 @@ function getHtmlContent() {
     }
 
     .content-section h4:has(input:checked)+.rendered-content {
-      height: 0;
+      display: none;
     }
 
     .role-section {
