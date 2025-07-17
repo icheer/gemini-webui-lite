@@ -643,6 +643,7 @@ function getHtmlContent() {
         flex-direction: column;
         padding: 10px;
         height: 100vh;
+        height: 100dvh;
         position: relative;
       }
 
@@ -652,6 +653,7 @@ function getHtmlContent() {
         left: 0;
         width: 100%;
         height: 100vh;
+        height: 100dvh;
         z-index: 1000;
         padding: 20px;
         transform: translateX(-100%);
@@ -670,6 +672,7 @@ function getHtmlContent() {
         left: 0;
         width: 100%;
         height: 100vh;
+        height: 100dvh;
         background: rgba(0, 0, 0, 0.5);
         z-index: 999;
         opacity: 0;
