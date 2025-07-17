@@ -232,6 +232,78 @@ function getHtmlContent() {
           };
         });
       }
+
+      // 计算IndexedDB存储空间大小（MB）
+      async getTotalDataSize() {
+        if (!this.db) await this.init();
+
+        return new Promise((resolve, reject) => {
+          const transaction = this.db.transaction([this.storeName], 'readonly');
+          const store = transaction.objectStore(this.storeName);
+          const request = store.getAll();
+
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => {
+            const allData = request.result;
+            let totalSize = 0;
+
+            // 计算所有数据的JSON字符串大小
+            allData.forEach(item => {
+              const jsonString = JSON.stringify(item);
+              // 使用UTF-8编码计算字节数
+              totalSize += new Blob([jsonString]).size;
+            });
+
+            // 转换为MB
+            const sizeInMB = totalSize / (1024 * 1024);
+            resolve(sizeInMB);
+          };
+        });
+      }
+
+      // 获取存储空间统计信息
+      async getStorageStats() {
+        if (!this.db) await this.init();
+
+        const stats = {
+          totalSizeMB: 0,
+          itemCount: 0,
+          largestItemKey: '',
+          largestItemSizeMB: 0
+        };
+
+        return new Promise((resolve, reject) => {
+          const transaction = this.db.transaction([this.storeName], 'readonly');
+          const store = transaction.objectStore(this.storeName);
+          const request = store.getAll();
+
+          request.onerror = () => reject(request.error);
+          request.onsuccess = () => {
+            const allData = request.result;
+            let totalSize = 0;
+            let maxSize = 0;
+            let maxKey = '';
+
+            allData.forEach(item => {
+              const jsonString = JSON.stringify(item);
+              const itemSize = new Blob([jsonString]).size;
+              totalSize += itemSize;
+
+              if (itemSize > maxSize) {
+                maxSize = itemSize;
+                maxKey = item.key || 'unknown';
+              }
+            });
+
+            stats.totalSizeMB = totalSize / (1024 * 1024);
+            stats.itemCount = allData.length;
+            stats.largestItemKey = maxKey;
+            stats.largestItemSizeMB = maxSize / (1024 * 1024);
+
+            resolve(stats);
+          };
+        });
+      }
     }
 
     // 全局实例
@@ -1257,10 +1329,10 @@ function getHtmlContent() {
         await this.loadData();
         // 计算geminiDB总数据量
         const totalDataSize = await window.geminiDB.getTotalDataSize();
-        if (totalDataSize > 0.01 * 1024 * 1024) {
+        if (totalDataSize > 5) {
           Swal.fire({
-            title: '数据量过大' + totalDataSize.toFixed(6),
-            text: '当前存储的数据量超过了 5MB，可能会影响性能。建议清理一些旧会话。',
+            title: '数据量过大',
+            text: '当前存储的数据量为' + totalDataSize.toFixed(2) + ' MB，超过了 5MB，可能会影响性能。建议清理一些旧会话。',
             icon: 'warning',
             confirmButtonText: '知道了'
           });
