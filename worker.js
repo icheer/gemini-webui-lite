@@ -245,6 +245,7 @@ function getHtmlContent() {
     }
 
     body {
+      position: relative;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
         sans-serif;
       background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
@@ -639,6 +640,10 @@ function getHtmlContent() {
 
     /* 移动端适配 */
     @media (max-width: 768px) {
+      body {
+        overflow: hidden;
+      }
+
       .container {
         flex-direction: column;
         padding: 10px;
