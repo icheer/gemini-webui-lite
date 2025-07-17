@@ -1420,7 +1420,7 @@ function getHtmlContent() {
           // 使用html2canvas截图
           html2canvas(sessionContent, {
             backgroundColor: '#ffffff',
-            scale: 2,
+            scale: window.devicePixelRatio || 1,
             useCORS: true,
             allowTaint: false,
             logging: false,
