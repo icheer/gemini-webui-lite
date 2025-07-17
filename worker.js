@@ -250,6 +250,7 @@ function getHtmlContent() {
         sans-serif;
       background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
       min-height: 100vh;
+      min-height: 100dvh;
       color: #333;
     }
 
