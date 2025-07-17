@@ -1573,7 +1573,7 @@ function getHtmlContent() {
 
           this.errorMessage = '';
           const userMessage = this.messageInput.trim();
-          this.messageInput = '';
+          this.clearInput();
           // 清空当前会话的草稿
           if (this.currentSession) {
             this.currentSession.draft = '';
