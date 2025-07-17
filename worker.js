@@ -493,6 +493,7 @@ function getHtmlContent() {
     }
 
     .message-input {
+      display: block;
       width: 100%;
       min-height: 44px;
       max-height: 120px;
