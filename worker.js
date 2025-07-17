@@ -267,7 +267,9 @@ function getHtmlContent() {
       vertical-align: middle;
     }
 
+    input::placeholder,
     textarea::placeholder {
+      color: #a0aec0;
       user-select: none;
     }
 
