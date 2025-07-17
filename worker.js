@@ -1,15 +1,24 @@
-const SERVER_TYPE = typeof Deno !== 'undefined' ? 'DENO' : 'CF';
-const isDeno = SERVER_TYPE === 'DENO';
-
 // ⚠️注意: 仅当您有密码共享需求时才需要配置 SECRET_PASSWORD 和 GEMINI_API_KEYS 这两个环境变量! 否则您无需配置, 默认会使用WebUI填写的API Key进行gemini请求
-// 这里是您和您的朋友共享的密码, 优先使用环境变量, 双竖线后可以直接硬编码(例如 'yijiaren.308' 免得去管理面板配置环境变量了, 但极不推荐这么做) 
-const SECRET_PASSWORD = (isDeno ? Deno.env.get('SECRET_PASSWORD') : process.env.SECRET_PASSWORD) || `yijiaren.${~~(Math.random() * 1000)}`;
+// 这里是您和您的朋友共享的密码, 优先使用环境变量, 双竖线后可以直接硬编码(例如 'yijiaren.308' 免得去管理面板配置环境变量了, 但极不推荐这么做!) 
+const SECRET_PASSWORD = getEnv('SECRET_PASSWORD') || `yijiaren.${~~(Math.random() * 1000)}`;
 // 这里是您的Gemini API密钥清单, 多个时使用逗号分隔, 会轮询(随机)使用, 同样也是优先使用环境变量, 其次使用代码中硬写的值, 注意不要在公开代码仓库中提交密钥的明文信息, 谨防泄露!!
-const GEMINI_API_KEYS = (isDeno ? Deno.env.get('GEMINI_API_KEYS') : process.env.GEMINI_API_KEYS) || 'AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,AIzayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'
-const GEMINI_API_KEY_LIST = GEMINI_API_KEYS.split(',');
+const GEMINI_API_KEYS = getEnv('GEMINI_API_KEYS') || 'AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,AIzayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy';
+const GEMINI_API_KEY_LIST = (GEMINI_API_KEYS || '').split(',');
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com';
 const htmlContent = getHtmlContent();
+
+// 获取环境变量
+const isDeno = typeof Deno !== 'undefined'
+const isCf = !isDeno && typeof Request !== 'undefined' && typeof Request.cf !== 'undefined';
+const SERVER_TYPE = isDeno ? 'DENO' : (isCf ? 'CF' : 'VPS');
+function getEnv(key) {
+  if (isDeno) {
+    return Deno.env.get(key) || '';
+  } else {
+    return process.env[key] || '';
+  }
+}
 
 // 通用的请求处理函数
 async function handleRequest(request, env = {}) {
@@ -88,7 +97,7 @@ export default {
 };
 
 // Deno Deploy 支持
-if (typeof Deno !== 'undefined') {
+if (isDeno) {
   Deno.serve(handleRequest);
 }
 
