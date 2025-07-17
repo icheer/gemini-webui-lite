@@ -1187,6 +1187,9 @@ function getHtmlContent() {
         window.removeEventListener('resize', this.checkMobile);
       },
       methods: {
+        sleep(ms) {
+          return new Promise(resolve => setTimeout(resolve, ms));
+        },
         async loadData() {
           // 加载 API Key
           this.apiKey =
@@ -1658,7 +1661,7 @@ function getHtmlContent() {
                         data.candidates[0].content
                       ) {
                         const delta =
-                          data.candidates[0].content.parts[0]?.text || '';
+                          data.candidates[0].content.parts?.[0]?.text || '';
                         if (delta) {
                           this.streamingContent += delta;
                           // this.scrollToBottom();
@@ -1741,7 +1744,7 @@ function getHtmlContent() {
 
         // 如果当前已经滑动到底部，则保持在底部
         async stickToBottom() {
-          await this.$nextTick();
+          await this.sleep(10);
           const container = this.$refs.messagesContainer;
           console.log(container);
           if (!container) return;
