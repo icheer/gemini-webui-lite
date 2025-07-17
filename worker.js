@@ -1755,7 +1755,7 @@ function getHtmlContent() {
           }
           const isAtBottom =
             container.scrollHeight - container.scrollTop <=
-            container.clientHeight + vh * 0.15;
+            container.clientHeight + vh * 0.2;
           if (isAtBottom) {
             container.scrollTop = container.scrollHeight;
           }
