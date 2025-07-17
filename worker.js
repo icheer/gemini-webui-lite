@@ -31,7 +31,7 @@ async function handleRequest(request, env = {}) {
   if (apiPath === '/whoami') {
     return new Response(JSON.stringify({
       serverType: SERVER_TYPE,
-      serverInfo: isDeno ? Object.fromEntries(Deno.build) : request.cf || 'unknown',
+      serverInfo: isDeno ? Deno.build.toString() : request.cf || 'unknown',
       url: request.url,
       headers: Object.fromEntries(request.headers.entries()),
       method: request.method,
