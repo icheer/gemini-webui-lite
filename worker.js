@@ -263,6 +263,10 @@ function getHtmlContent() {
       user-select: none;
     }
 
+    label * {
+      vertical-align: middle;
+    }
+
     textarea::placeholder {
       user-select: none;
     }
@@ -888,6 +892,14 @@ function getHtmlContent() {
       font-weight: normal;
     }
 
+    .content-section h4:has(input:checked) {
+      margin-bottom: 0;
+    }
+
+    .content-section h4:has(input:checked)+.rendered-content {
+      height: 0;
+    }
+
     .role-section {
       background: #f8f9fa;
     }
@@ -903,7 +915,9 @@ function getHtmlContent() {
     }
 
     .rendered-content {
+      position: relative;
       line-height: 1.6;
+      overflow: hidden;
     }
 
     .markdown-body {
@@ -1050,7 +1064,13 @@ function getHtmlContent() {
             <!-- 角色设定显示 -->
             <div v-if="currentSession.role.trim()" class="content-section role-section">
               <h4>
-                角色设定
+                <span>
+                  <label for="fold">
+                    <span>角色设定　</span>
+                    <input type="checkbox" id="fold">
+                    <small>&nbsp;折叠</small>
+                  </label>
+                </span>
                 <button @click="copyToClipboard(currentSession.role)" class="copy-btn" title="复制角色设定">
                   复制
                 </button>
