@@ -1663,8 +1663,11 @@ function getHtmlContent() {
                         const delta =
                           data.candidates[0].content.parts?.[0]?.text || '';
                         if (delta) {
+                          const shouldScroll = !this.streamingContent;
                           this.streamingContent += delta;
-                          // this.scrollToBottom();
+                          if (shouldScroll) {
+                            this.scrollToBottom();
+                          }
                         }
                       }
                     } catch (parseError) {
@@ -1755,7 +1758,7 @@ function getHtmlContent() {
           }
           const isAtBottom =
             container.scrollHeight - container.scrollTop <=
-            container.clientHeight + vh * 0.2;
+            container.clientHeight + vh * 0.25;
           if (isAtBottom) {
             container.scrollTop = container.scrollHeight;
           }
