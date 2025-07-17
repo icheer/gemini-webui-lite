@@ -1255,6 +1255,16 @@ function getHtmlContent() {
         });
 
         await this.loadData();
+        // 计算geminiDB总数据量
+        const totalDataSize = await window.geminiDB.getTotalDataSize();
+        if (totalDataSize > 0.01 * 1024 * 1024) {
+          Swal.fire({
+            title: '数据量过大' + totalDataSize.toFixed(6),
+            text: '当前存储的数据量超过了 5MB，可能会影响性能。建议清理一些旧会话。',
+            icon: 'warning',
+            confirmButtonText: '知道了'
+          });
+        }
         if (this.sessions.length === 0) {
           this.createNewSession();
         }
