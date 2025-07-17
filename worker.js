@@ -459,7 +459,7 @@ function getHtmlContent() {
     .messages-container {
       flex: 1;
       overflow-y: auto;
-      padding: 10px;
+      padding: 8px;
       display: flex;
       flex-direction: column;
       gap: 15px;
@@ -853,7 +853,7 @@ function getHtmlContent() {
       display: flex;
       flex-direction: column;
       gap: 15px;
-      padding: 6px;
+      padding: 8px;
     }
 
     .content-section {
