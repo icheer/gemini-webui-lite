@@ -484,13 +484,20 @@ function getHtmlContent() {
       display: flex;
       gap: 10px;
       align-items: flex-end;
+      position: relative;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      position: relative;
     }
 
     .message-input {
-      flex: 1;
+      width: 100%;
       min-height: 44px;
       max-height: 120px;
       padding: 9px 16px;
+      padding-right: 40px;
       border: 2px solid #e1e5e9;
       border-radius: 22px;
       resize: none;
@@ -498,6 +505,32 @@ function getHtmlContent() {
       font-size: 14px;
       line-height: 1.4;
       transition: border-color 0.3s;
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      background: #cbd5e0;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #fff;
+      transition: all 0.2s ease;
+      opacity: 0.7;
+    }
+
+    .clear-btn:hover {
+      background: #a0aec0;
+      opacity: 1;
+      transform: translateY(-50%) scale(1.1);
     }
 
     .message-input:focus {
@@ -687,6 +720,10 @@ function getHtmlContent() {
       .input-area {
         padding: 15px;
         gap: 8px;
+      }
+
+      .input-wrapper {
+        flex: 1;
       }
 
       .message-input {
@@ -897,25 +934,17 @@ function getHtmlContent() {
     <button @click="toggleSidebar" class="mobile-menu-btn" v-show="isMobile">
       ☰
     </button>
-
     <!-- 移动端遮罩层 -->
     <div class="sidebar-overlay" :class="{ show: showSidebar && isMobile }" v-cloak @click="hideSidebar"></div>
-
     <div class="container">
       <!-- 侧边栏 -->
       <div class="sidebar" :class="{ show: showSidebar || !isMobile }" v-cloak>
-        <!-- 移动端关闭按钮 -->
-        <button @click="hideSidebar" class="sidebar-close-btn" v-show="isMobile">
-          ×
-        </button>
-
         <!-- API Key 设置 -->
         <div class="api-key-section">
           <label for="apiKey" style="display: block; margin-bottom: 8px; font-weight: 500">API Key:</label>
           <input type="password" id="apiKey" v-model="apiKey" @input="saveApiKey" class="api-key-input"
             placeholder="请输入您的 Gemini API Key" />
         </div>
-
         <!-- 角色设定 -->
         <div class="role-setting">
           <label style="display: block; margin-bottom: 8px; font-weight: 500">角色设定 (可选):</label>
@@ -923,12 +952,10 @@ function getHtmlContent() {
             placeholder="输入系统提示词或角色设定...">
             </textarea>
         </div>
-
         <!-- 新建会话按钮 -->
         <button @click="createNewSession" class="new-session-btn">
           + 新建会话
         </button>
-
         <!-- 会话列表 -->
         <div class="sessions">
           <div v-for="session in sessions" :key="session.id" @click="switchSession(session.id)"
@@ -940,27 +967,26 @@ function getHtmlContent() {
           </div>
         </div>
       </div>
-
       <!-- 主聊天区域 -->
       <div class="main-chat">
         <!-- 头部 -->
         <div class="header">
           <h2 style="color: #495057; margin: 0">Gemini Chat</h2>
-          <select v-model="selectedModel" class="model-select" :disabled="isLoading || isStreaming">
+          <select v-model="selectedModel" class="model-select" :disabled="isLoading || isStreaming"
+            @change="saveData()">
             <option v-for="model in availableModels" :key="model" :value="model">
               {{ model }}
             </option>
           </select>
-          <button v-if="currentSession && currentSession.answer" class="share-btn" @click="shareSession">分享问答</button>
+          <button v-if="currentSession && currentSession.answer && !isLoading && !isStreaming" class="share-btn"
+            @click="shareSession">分享问答</button>
         </div>
-
         <!-- 消息区域 -->
         <div class="messages-container" ref="messagesContainer">
           <div v-if="!currentSession || (!currentSession.question && !currentSession.answer)" class="empty-state">
             <h3>开始与 Gemini 对话</h3>
             <p>选择一个模型并输入您的问题</p>
           </div>
-
           <div v-if="currentSession && (currentSession.question || currentSession.answer)" class="session-content">
             <!-- 角色设定显示 -->
             <div v-if="currentSession.role.trim()" class="content-section role-section">
@@ -972,7 +998,6 @@ function getHtmlContent() {
               </h4>
               <div class="rendered-content markdown-body" v-html="renderMarkdown(currentSession.role)"></div>
             </div>
-
             <!-- 问题1 -->
             <div v-if="currentSession.question" class="content-section question-section">
               <h4>
@@ -987,7 +1012,6 @@ function getHtmlContent() {
               </h4>
               <div class="rendered-content markdown-body" v-html="renderMarkdown(currentSession.question)"></div>
             </div>
-
             <!-- 回答1 -->
             <div v-if="currentSession.answer || isStreaming" class="content-section answer-section">
               <h4>
@@ -1004,7 +1028,6 @@ function getHtmlContent() {
                 v-html="renderMarkdown(isStreaming && !currentSession.question2 ? streamingContent : currentSession.answer)">
               </div>
             </div>
-
             <!-- 问题2 -->
             <div v-if="currentSession.question2" class="content-section question-section">
               <h4>
@@ -1019,7 +1042,6 @@ function getHtmlContent() {
               </h4>
               <div class="rendered-content markdown-body" v-html="renderMarkdown(currentSession.question2)"></div>
             </div>
-
             <!-- 回答2 -->
             <div v-if="currentSession.question2 && (currentSession.answer2 || isStreaming)"
               class="content-section answer-section">
@@ -1037,7 +1059,6 @@ function getHtmlContent() {
                 v-html="renderMarkdown(isStreaming ? streamingContent : currentSession.answer2)"></div>
             </div>
           </div>
-
           <div v-if="isLoading && !isStreaming" class="loading">
             <div class="spinner"></div>
             <span>AI 正在思考中...</span>
@@ -1047,11 +1068,13 @@ function getHtmlContent() {
             {{ errorMessage }}
           </div>
         </div>
-
         <!-- 输入区域 -->
         <div class="input-area">
-          <textarea v-model="messageInput" @keydown="handleKeyDown" class="message-input"
-            :placeholder="inputPlaceholder" :disabled="!canInput" rows="1" ref="messageInputRef"></textarea>
+          <div class="input-wrapper">
+            <textarea v-model="messageInput" @input="onInputChange" @keydown="handleKeyDown" class="message-input"
+              :placeholder="inputPlaceholder" :disabled="!canInput" rows="1" ref="messageInputRef"></textarea>
+            <button v-show="messageInput.trim()" @click="clearInput" class="clear-btn" title="清空输入">×</button>
+          </div>
           <button v-if="isCurrentEnd" class="send-btn" @click="createNewSession">
             新会话
           </button>
@@ -1106,12 +1129,17 @@ function getHtmlContent() {
           return !list.some(s => s.answer);
         },
         inputPlaceholder() {
+          const session = this.currentSession || {};
           if (!this.apiKey) {
             return '请先在左上角设置 API Key';
-          } else if (this.isLoading || this.isStreaming) {
+          } else if (this.isLoading) {
             return 'AI 正在思考中...';
-          } else if (this.currentSession && this.currentSession.answer2) {
+          } else if (this.isStreaming) {
+            return 'AI 正在生成回答...';
+          } else if (session.answer2) {
             return '当前会话已结束';
+          } else if (session.answer) {
+            return '输入您的追问...';
           } else {
             return '输入您的问题...';
           }
@@ -1195,6 +1223,9 @@ function getHtmlContent() {
             (await window.geminiDB.getItem('gemini_selected_model')) ||
             this.availableModels[0];
 
+          // 加载当前会话的草稿
+          this.loadDraftFromCurrentSession();
+
           // 首次向用户询问 API Key
           if (!this.apiKey && this.isTotallyBlank) {
             this.askApiKeyIfNeeded();
@@ -1243,6 +1274,8 @@ function getHtmlContent() {
 
         createNewSession() {
           if (this.isLoading) return;
+          // 保存当前会话的草稿
+          this.saveDraftToCurrentSession();
           const firstSession = this.sessions[0];
           if (firstSession && !firstSession.question) {
             this.currentSessionId = firstSession.id;
@@ -1257,12 +1290,15 @@ function getHtmlContent() {
               answer: '',
               question2: '',
               answer2: '',
-              createdAt: new Date().toISOString(),
-              createdAt2: ''
+              createdAt: '',
+              createdAt2: '',
+              draft: ''
             };
             this.sessions.unshift(newSession);
             this.currentSessionId = newSession.id;
           }
+          // 加载新会话的草稿
+          this.loadDraftFromCurrentSession();
           this.saveData();
           // 移动端创建新会话后隐藏侧边栏
           if (this.isMobile) {
@@ -1272,7 +1308,11 @@ function getHtmlContent() {
 
         switchSession(sessionId) {
           if (this.isLoading) return;
+          // 保存当前会话的草稿
+          this.saveDraftToCurrentSession();
           this.currentSessionId = sessionId;
+          // 加载新会话的草稿
+          this.loadDraftFromCurrentSession();
           this.saveData();
           // 移动端切换会话后隐藏侧边栏
           if (this.isMobile) {
@@ -1314,10 +1354,6 @@ function getHtmlContent() {
               doDelete();
             }
           });
-        },
-
-        deleteMessage(index) {
-          // 这个方法不再需要，因为我们改为单轮对话
         },
 
         updateRolePrompt() {
@@ -1484,6 +1520,10 @@ function getHtmlContent() {
           this.errorMessage = '';
           const userMessage = this.messageInput.trim();
           this.messageInput = '';
+          // 清空当前会话的草稿
+          if (this.currentSession) {
+            this.currentSession.draft = '';
+          }
 
           // 添加用户消息
           if (!this.currentSession) {
@@ -1697,24 +1737,56 @@ function getHtmlContent() {
               container.scrollTop = container.scrollHeight;
             }
           });
-        }
-      },
-      watch: {
-        messageInput() {
+        },
+
+        // 如果当前已经滑动到底部，则保持在底部
+        async stickToBottom() {
+          await this.$nextTick();
+          const container = this.$refs.messagesContainer;
+          if (!container) return;
+          const isAtBottom =
+            container.scrollHeight - container.scrollTop <=
+            container.clientHeight + 3;
+          if (isAtBottom) {
+            container.scrollTop = container.scrollHeight;
+          }
+        },
+
+        // 清空输入框
+        clearInput() {
+          this.messageInput = '';
+          this.saveDraftToCurrentSession();
           this.autoResizeTextarea();
         },
 
-        selectedModel() {
-          this.saveData();
+        // 输入变化时的处理
+        onInputChange() {
+          this.autoResizeTextarea();
+          this.saveDraftToCurrentSession();
         },
 
-        currentSessionId() {
-          this.scrollToBottom();
-        }
+        // 保存草稿到当前会话
+        saveDraftToCurrentSession() {
+          if (this.currentSession) {
+            this.currentSession.draft = this.messageInput;
+            this.saveData();
+          }
+        },
 
-        // streamingContent() {
-        //   this.scrollToBottom();
-        // }
+        // 从当前会话加载草稿
+        loadDraftFromCurrentSession() {
+          if (this.currentSession) {
+            this.messageInput = (this.currentSession.draft || '').trim();
+          } else {
+            this.messageInput = '';
+          }
+          this.autoResizeTextarea();
+        }
+      },
+      watch: {
+        streamingContent() {
+          this.stickToBottom();
+        }
       }
     }).mount('#app');
   </script>
