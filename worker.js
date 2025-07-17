@@ -919,7 +919,7 @@ function getHtmlContent() {
     .role-textarea {
       width: 100%;
       min-height: 90px;
-      max-height: 50vh;
+      max-height: 30vh;
       padding: 12px;
       border: 2px solid #e1e5e9;
       border-radius: 8px;
@@ -1347,23 +1347,23 @@ function getHtmlContent() {
         });
 
         await this.loadData();
+        if (this.sessions.length === 0) {
+          this.createNewSession();
+        }
+        // 检测是否为移动端
+        this.checkMobile();
+        window.addEventListener('resize', this.checkMobile);
+
         // 计算geminiDB总数据量
         const totalDataSize = await window.geminiDB.getTotalDataSize();
-        if (totalDataSize > 5) {
+        if (totalDataSize > 2) {
           Swal.fire({
             title: '数据量过大',
-            text: '当前存储的数据量为' + totalDataSize.toFixed(2) + ' MB，超过了 5MB，可能会影响性能。建议清理一些旧会话。',
+            text: '当前存储的数据量为' + totalDataSize.toFixed(2) + ' MB，超过了 2MB，可能会影响性能。建议清理一些旧会话。',
             icon: 'warning',
             confirmButtonText: '知道了'
           });
         }
-        if (this.sessions.length === 0) {
-          this.createNewSession();
-        }
-
-        // 检测是否为移动端
-        this.checkMobile();
-        window.addEventListener('resize', this.checkMobile);
       },
 
       beforeUnmount() {
