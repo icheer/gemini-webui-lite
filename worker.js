@@ -1743,10 +1743,12 @@ function getHtmlContent() {
         async stickToBottom() {
           await this.$nextTick();
           const container = this.$refs.messagesContainer;
+          console.log(container);
           if (!container) return;
           const isAtBottom =
             container.scrollHeight - container.scrollTop <=
             container.clientHeight + 3;
+          console.log(container.scrollHeight - container.scrollTop, container.clientHeight);
           if (isAtBottom) {
             container.scrollTop = container.scrollHeight;
           }
