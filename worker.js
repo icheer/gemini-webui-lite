@@ -256,7 +256,12 @@ function getHtmlContent() {
       display: none;
     }
 
-    button {
+    button,
+    label {
+      user-select: none;
+    }
+
+    textarea::placeholder {
       user-select: none;
     }
 
@@ -292,13 +297,22 @@ function getHtmlContent() {
 
     .header {
       position: relative;
-      padding: 15px;
+      padding: 18px 32px 18px 18px;
       border-bottom: 1px solid #e1e5e9;
       display: flex;
       justify-content: between;
       align-items: center;
       gap: 15px;
       flex-wrap: wrap;
+    }
+
+    .header h2 {
+      display: flex;
+      align-items: center;
+      margin: 0;
+      color: #495057;
+      gap: 6px;
+      user-select: none;
     }
 
     .header .share-btn {
@@ -350,6 +364,7 @@ function getHtmlContent() {
       background: white;
       font-size: 14px;
       cursor: pointer;
+      user-select: none;
     }
 
     .sessions {
@@ -947,8 +962,8 @@ function getHtmlContent() {
         </div>
         <!-- 角色设定 -->
         <div class="role-setting">
-          <label style="display: block; margin-bottom: 8px; font-weight: 500">角色设定 (可选):</label>
-          <textarea v-model="globalRolePrompt" @input="updateGlobalRolePrompt" class="role-textarea"
+          <label for="rolePrompt" style="display: block; margin-bottom: 8px; font-weight: 500">角色设定 (可选):</label>
+          <textarea id="rolePrompt" v-model="globalRolePrompt" @input="updateGlobalRolePrompt" class="role-textarea"
             placeholder="输入系统提示词或角色设定...">
             </textarea>
         </div>
@@ -971,11 +986,46 @@ function getHtmlContent() {
       <div class="main-chat">
         <!-- 头部 -->
         <div class="header">
-          <h2 style="color: #495057; margin: 0">Gemini Chat</h2>
+          <h2>
+            <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" color="#fff"
+              style="flex: 0 0 auto; line-height: 1;">
+              <title>Gemini</title>
+              <path
+                d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z"
+                fill="#3186FF"></path>
+              <path
+                d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z"
+                fill="url(#lobe-icons-gemini-fill-0)"></path>
+              <path
+                d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z"
+                fill="url(#lobe-icons-gemini-fill-1)"></path>
+              <path
+                d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z"
+                fill="url(#lobe-icons-gemini-fill-2)"></path>
+              <defs>
+                <linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-fill-0" x1="7" x2="11" y1="15.5"
+                  y2="12">
+                  <stop stop-color="#08B962"></stop>
+                  <stop offset="1" stop-color="#08B962" stop-opacity="0"></stop>
+                </linearGradient>
+                <linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-fill-1" x1="8" x2="11.5" y1="5.5"
+                  y2="11">
+                  <stop stop-color="#F94543"></stop>
+                  <stop offset="1" stop-color="#F94543" stop-opacity="0"></stop>
+                </linearGradient>
+                <linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-fill-2" x1="3.5" x2="17.5"
+                  y1="13.5" y2="12">
+                  <stop stop-color="#FABC12"></stop>
+                  <stop offset=".46" stop-color="#FABC12" stop-opacity="0"></stop>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span>Gemini Chat</span>
+          </h2>
           <select v-model="selectedModel" class="model-select" :disabled="isLoading || isStreaming"
             @change="saveData()">
-            <option v-for="model in availableModels" :key="model" :value="model">
-              {{ model }}
+            <option v-for="i in availableModels" :key="i.value" :value="i.value">
+              {{ i.label }}
             </option>
           </select>
           <button v-if="currentSession && currentSession.answer && !isLoading && !isStreaming" class="share-btn"
@@ -1017,7 +1067,7 @@ function getHtmlContent() {
               <h4>
                 <span>
                   回答
-                  <small v-if="currentSession.model">&emsp;{{ currentSession.model }}</small>
+                  <small v-if="currentSession.model">&emsp;{{ getModelName(currentSession.model) }}</small>
                 </span>
                 <button v-if="currentSession.answer && !isStreaming" @click="copyToClipboard(currentSession.answer)"
                   class="copy-btn" title="复制回答">
@@ -1048,7 +1098,7 @@ function getHtmlContent() {
               <h4>
                 <span>
                   回答
-                  <small v-if="currentSession.model2">&emsp;{{ currentSession.model2 }}</small>
+                  <small v-if="currentSession.model2">&emsp;{{ getModelName(currentSession.model2) }}</small>
                 </span>
                 <button v-if="currentSession.answer2 && !isStreaming" @click="copyToClipboard(currentSession.answer2)"
                   class="copy-btn" title="复制回答">
@@ -1098,9 +1148,9 @@ function getHtmlContent() {
           errorMessage: '',
           selectedModel: 'gemini-2.5-pro',
           availableModels: [
-            'gemini-2.5-pro',
-            'gemini-2.5-flash-preview-05-20',
-            'gemini-2.5-flash-lite-preview-06-17'
+            { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
+            { value: 'gemini-2.5-flash-preview-05-20', label: 'Gemini 2.5 Flash Preview 05-20' },
+            { value: 'gemini-2.5-flash-lite-preview-06-17', label: 'Gemini 2.5 Flash-Lite Preview 06-17' }
           ],
           sessions: [],
           currentSessionId: null,
@@ -1187,9 +1237,6 @@ function getHtmlContent() {
         window.removeEventListener('resize', this.checkMobile);
       },
       methods: {
-        sleep(ms) {
-          return new Promise(resolve => setTimeout(resolve, ms));
-        },
         async loadData() {
           // 加载 API Key
           this.apiKey =
@@ -1224,7 +1271,7 @@ function getHtmlContent() {
           // 加载选中的模型
           this.selectedModel =
             (await window.geminiDB.getItem('gemini_selected_model')) ||
-            this.availableModels[0];
+            this.availableModels[0].value;
 
           // 加载当前会话的草稿
           this.loadDraftFromCurrentSession();
@@ -1509,6 +1556,10 @@ function getHtmlContent() {
               this.currentSession.question.slice(0, 30) +
               (this.currentSession.question.length > 30 ? '...' : '');
           }
+        },
+
+        getModelName(value) {
+          return this.availableModels.find(i => i.value === value)?.label || value;
         },
 
         async sendMessage() {
