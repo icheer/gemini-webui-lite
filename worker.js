@@ -1744,14 +1744,17 @@ function getHtmlContent() {
 
         // 如果当前已经滑动到底部，则保持在底部
         async stickToBottom() {
-          await this.sleep(10);
+          await this.$nextTick();
           const container = this.$refs.messagesContainer;
-          console.log(container);
           if (!container) return;
+          // 如果当前容器滚动高度低于1.5倍window.innerHeight, 强制滚动到底部
+          if (container.scrollHeight < window.innerHeight * 1.5) {
+            container.scrollTop = container.scrollHeight;
+            return;
+          }
           const isAtBottom =
             container.scrollHeight - container.scrollTop <=
             container.clientHeight + 3;
-          console.log(container.scrollHeight - container.scrollTop, container.clientHeight);
           if (isAtBottom) {
             container.scrollTop = container.scrollHeight;
           }
