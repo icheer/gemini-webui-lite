@@ -36,7 +36,7 @@ async function handleRequest(request, env = {}) {
         os: Deno.build.os,
         arch: Deno.build.arch,
         vendor: Deno.build.vendor,
-      } : request.cf?.colo || 'unknown',
+      } : request.cf || 'unknown',
       url: request.url,
       headers: Object.fromEntries(request.headers.entries()),
       method: request.method,
