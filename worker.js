@@ -1801,7 +1801,8 @@ function getHtmlContent() {
             });
 
             if (!response.ok) {
-              const errorData = await response.json().catch(() => ({}));
+              const errorData = await response.json().catch(e => ({}));
+              window.errorData = errorData;
               throw new Error(
                 errorData.error?.message ||
                 'HTTP ' + response.status + ': ' + response.statusText
@@ -1881,13 +1882,11 @@ function getHtmlContent() {
             this.currentSession[answerKey] = this.streamingContent;
             this.saveData();
           } catch (error) {
-            window.sendError = error;
             console.error('Error:', error);
 
             if (error.name === 'AbortError') {
               this.errorMessage = '请求已取消';
             } else {
-              console.error('发送失败:', error, error.toString());
               this.errorMessage = '发送失败: ' + error.message;
 
               // 显示错误提示
