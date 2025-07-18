@@ -1078,7 +1078,7 @@ function getHtmlContent() {
         <div class="api-key-section">
           <label for="apiKey" style="display: block; margin-bottom: 8px; font-weight: 500">API Key:</label>
           <input type="password" id="apiKey" v-model="apiKey" @input="saveApiKey" class="api-key-input"
-            placeholder="请输入您的 Gemini API Key" autocomplete="off" />
+            placeholder="请输入您的 Gemini API Key" autocomplete="new-password" />
         </div>
         <!-- 角色设定 -->
         <div class="role-setting">
