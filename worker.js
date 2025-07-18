@@ -259,7 +259,10 @@ function getHtmlContent() {
         if (!this.db) await this.init();
 
         return new Promise((resolve, reject) => {
-          const transaction = this.db.transaction([this.storeName], 'readonly');
+          const transaction = this.db.transaction(
+            [this.storeName],
+            'readonly'
+          );
           const store = transaction.objectStore(this.storeName);
           const request = store.getAll();
 
@@ -294,7 +297,10 @@ function getHtmlContent() {
         };
 
         return new Promise((resolve, reject) => {
-          const transaction = this.db.transaction([this.storeName], 'readonly');
+          const transaction = this.db.transaction(
+            [this.storeName],
+            'readonly'
+          );
           const store = transaction.objectStore(this.storeName);
           const request = store.getAll();
 
@@ -1066,9 +1072,8 @@ function getHtmlContent() {
 <body>
   <div id="app">
     <!-- 移动端菜单按钮 -->
-    <button @click="toggleSidebar" class="mobile-menu-btn" v-show="isMobile">
-      ☰
-    </button>
+    <button v-show="isMobile" class="mobile-menu-btn" @click="toggleSidebar">
+      {{ !showSidebar ? '☰' : '＜' }} </button>
     <!-- 移动端遮罩层 -->
     <div class="sidebar-overlay" :class="{ show: showSidebar && isMobile }" v-cloak @click="hideSidebar"></div>
     <div class="container">
@@ -1108,7 +1113,7 @@ function getHtmlContent() {
         <div class="header">
           <h2>
             <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" color="#fff"
-              style="flex: 0 0 auto; line-height: 1;">
+              style="flex: 0 0 auto; line-height: 1">
               <title>Gemini</title>
               <path
                 d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z"
@@ -1149,7 +1154,9 @@ function getHtmlContent() {
             </option>
           </select>
           <button v-if="currentSession && currentSession.answer && !isLoading && !isStreaming" class="share-btn"
-            @click="shareSession">分享问答</button>
+            @click="shareSession">
+            分享问答
+          </button>
         </div>
         <!-- 消息区域 -->
         <div class="messages-container" ref="messagesContainer">
@@ -1164,7 +1171,7 @@ function getHtmlContent() {
                 <span>
                   <label for="fold">
                     <span>角色设定　</span>
-                    <input type="checkbox" id="fold">
+                    <input type="checkbox" id="fold" />
                     <small>&nbsp;折叠</small>
                   </label>
                 </span>
@@ -1249,7 +1256,9 @@ function getHtmlContent() {
           <div class="input-wrapper">
             <textarea v-model="messageInput" @input="onInputChange" @keydown="handleKeyDown" class="message-input"
               :placeholder="inputPlaceholder" :disabled="!canInput" rows="1" ref="messageInputRef"></textarea>
-            <button v-show="messageInput.trim()" @click="clearInput" class="clear-btn" title="清空输入">×</button>
+            <button v-show="messageInput.trim()" @click="clearInput" class="clear-btn" title="清空输入">
+              ×
+            </button>
           </div>
           <button v-if="isCurrentEnd" class="send-btn" @click="createNewSession">
             新会话
@@ -1275,8 +1284,14 @@ function getHtmlContent() {
           selectedModel: 'gemini-2.5-pro',
           availableModels: [
             { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
-            { value: 'gemini-2.5-flash-preview-05-20', label: 'Gemini 2.5 Flash Preview 05-20' },
-            { value: 'gemini-2.5-flash-lite-preview-06-17', label: 'Gemini 2.5 Flash-Lite Preview 06-17' }
+            {
+              value: 'gemini-2.5-flash-preview-05-20',
+              label: 'Gemini 2.5 Flash Preview 05-20'
+            },
+            {
+              value: 'gemini-2.5-flash-lite-preview-06-17',
+              label: 'Gemini 2.5 Flash-Lite Preview 06-17'
+            }
           ],
           sessions: [],
           currentSessionId: null,
@@ -1361,7 +1376,10 @@ function getHtmlContent() {
         if (totalDataSize > 2) {
           Swal.fire({
             title: '数据量过大',
-            text: '当前存储的数据量为' + totalDataSize.toFixed(2) + ' MB，超过了 2MB，可能会影响性能。建议清理一些旧会话。',
+            text:
+              '当前存储的数据量为' +
+              totalDataSize.toFixed(2) +
+              ' MB，超过了 2MB，可能会影响性能。建议清理一些旧会话。',
             icon: 'warning',
             confirmButtonText: '知道了'
           });
@@ -1636,54 +1654,64 @@ function getHtmlContent() {
             logging: false,
             height: null,
             width: null
-          }).then(canvas => {
-            // 检测是否为微信浏览器环境
-            const userAgent = navigator.userAgent.toLowerCase();
-            const isWechat = userAgent.includes('micromessenger') && userAgent.includes('mobile');
-            if (isWechat) {
-              // 微信环境：显示图片让用户长按保存
-              const imageDataUrl = canvas.toDataURL('image/png');
-              Swal.fire({
-                title: '长按图片保存',
-                html: '<img src="' + imageDataUrl + '" style="max-width: 100%; height: auto; border-radius: 8px;" />',
-                showConfirmButton: true,
-                confirmButtonText: '我知道了',
-                width: '92%',
-                padding: '0.25em 0 1em',
-                customClass: {
-                  htmlContainer: 'swal-image-container'
-                }
-              });
-            } else {
-              // 非微信环境：使用原有的下载逻辑
-              const link = document.createElement('a');
-              const regex = new RegExp('[\/\: ]', 'g');
-              link.download = 'gemini-chat-' + new Date().toLocaleString().replace(regex, '-') + '.png';
-              link.href = canvas.toDataURL('image/png');
+          })
+            .then(canvas => {
+              // 检测是否为微信浏览器环境
+              const userAgent = navigator.userAgent.toLowerCase();
+              const isWechat =
+                userAgent.includes('micromessenger') &&
+                userAgent.includes('mobile');
+              if (isWechat) {
+                // 微信环境：显示图片让用户长按保存
+                const imageDataUrl = canvas.toDataURL('image/png');
+                Swal.fire({
+                  title: '长按图片保存',
+                  html:
+                    '<img src="' +
+                    imageDataUrl +
+                    '" style="max-width: 100%; height: auto; border-radius: 8px;" />',
+                  showConfirmButton: true,
+                  confirmButtonText: '我知道了',
+                  width: '92%',
+                  padding: '0.25em 0 1em',
+                  customClass: {
+                    htmlContainer: 'swal-image-container'
+                  }
+                });
+              } else {
+                // 非微信环境：使用原有的下载逻辑
+                const link = document.createElement('a');
+                const regex = new RegExp('[\/\: ]', 'g');
+                link.download =
+                  'gemini-chat-' +
+                  new Date().toLocaleString().replace(regex, '-') +
+                  '.png';
+                link.href = canvas.toDataURL('image/png');
 
-              // 触发下载
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
+                // 触发下载
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
 
-              // 显示成功消息
+                // 显示成功消息
+                Swal.fire({
+                  title: '截图成功',
+                  text: '图片已保存到下载文件夹',
+                  icon: 'success',
+                  timer: 2000,
+                  showConfirmButton: false
+                });
+              }
+            })
+            .catch(error => {
+              console.error('截图失败:', error);
               Swal.fire({
-                title: '截图成功',
-                text: '图片已保存到下载文件夹',
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
+                title: '截图失败',
+                text: '生成图片时出现错误: ' + error.message,
+                icon: 'error',
+                confirmButtonText: '确定'
               });
-            }
-          }).catch(error => {
-            console.error('截图失败:', error);
-            Swal.fire({
-              title: '截图失败',
-              text: '生成图片时出现错误: ' + error.message,
-              icon: 'error',
-              confirmButtonText: '确定'
             });
-          });
         },
 
         updateSessionTitle() {
@@ -1695,7 +1723,9 @@ function getHtmlContent() {
         },
 
         getModelName(value) {
-          return this.availableModels.find(i => i.value === value)?.label || value;
+          return (
+            this.availableModels.find(i => i.value === value)?.label || value
+          );
         },
 
         async sendMessage() {
@@ -1807,7 +1837,7 @@ function getHtmlContent() {
               throw new Error(
                 errorData.error ||
                 errorData?.[0]?.error?.message ||
-                ('HTTP ' + response.status + ': ' + response.statusText)
+                'HTTP ' + response.status + ': ' + response.statusText
               );
             }
 
