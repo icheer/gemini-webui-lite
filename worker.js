@@ -474,7 +474,7 @@ function getHtmlContent() {
     }
 
     .session-item {
-      padding: 12px;
+      padding: 10px 12px;
       margin-bottom: 8px;
       background: #f8f9fa;
       border: 1px solid transparent;
