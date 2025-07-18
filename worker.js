@@ -515,7 +515,7 @@ function getHtmlContent() {
       cursor: pointer;
       padding: 4px 8px;
       border-radius: 4px;
-      font-size: 14px;
+      font-size: 16px;
       opacity: 0.7;
     }
 
@@ -640,7 +640,7 @@ function getHtmlContent() {
       min-height: 44px;
       max-height: 144px;
       padding: 9px 16px;
-      padding-right: 40px;
+      padding-right: 34px;
       border: 2px solid #e1e5e9;
       border-radius: 22px;
       resize: none;
@@ -648,6 +648,11 @@ function getHtmlContent() {
       font-size: 14px;
       line-height: 1.4;
       transition: border-color 0.3s;
+    }
+
+    .message-input:focus {
+      outline: none;
+      border-color: #a8edea;
     }
 
     .clear-btn {
@@ -664,7 +669,7 @@ function getHtmlContent() {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 15px;
       color: #fff;
       transition: all 0.2s ease;
       opacity: 0.7;
@@ -676,13 +681,8 @@ function getHtmlContent() {
       transform: translateY(-50%) scale(1.1);
     }
 
-    .message-input:focus {
-      outline: none;
-      border-color: #a8edea;
-    }
-
     .send-btn {
-      padding: 12px 20px;
+      padding: 12px 18px;
       background: #4299e1;
       color: white;
       border: none;
@@ -764,6 +764,7 @@ function getHtmlContent() {
         transition: transform 0.3s ease;
         backdrop-filter: blur(15px);
         background: rgba(255, 255, 255, 0.98);
+        border-radius: 0;
       }
 
       .sidebar.show {
@@ -1515,6 +1516,7 @@ function getHtmlContent() {
             if (this.sessions.length === 0) {
               this.createNewSession();
             }
+            this.loadDraftFromCurrentSession();
             this.saveData();
           };
           // 如果是空会话, 直接删除
@@ -1645,7 +1647,7 @@ function getHtmlContent() {
                 html: '<img src="' + imageDataUrl + '" style="max-width: 100%; height: auto; border-radius: 8px;" />',
                 showConfirmButton: true,
                 confirmButtonText: '我知道了',
-                width: '94%',
+                width: '92%',
                 padding: '0.25em 0 1em',
                 customClass: {
                   htmlContainer: 'swal-image-container'
