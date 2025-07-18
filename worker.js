@@ -1993,10 +1993,13 @@ function getHtmlContent() {
             })
             .then(data => {
               if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-                const summary = data.candidates[0].content.parts?.[0]?.text || '';
+                let summary = data.candidates[0].content.parts?.[0]?.text || '';
                 if (summary) {
                   const item = this.sessions.find(s => s.id === id);
                   if (item) {
+                    if (summary.endsWith('。') || summary.endsWith('！') || summary.endsWith('？')) {
+                      summary = summary.slice(0, -1);
+                    }
                     item.title = summary;
                     this.saveData();
                   }
