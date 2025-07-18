@@ -1949,7 +1949,8 @@ function getHtmlContent() {
         },
 
         // 生成会话摘要
-        generateSessionSummary() {
+        async generateSessionSummary() {
+          await this.$nextTick();
           const session = this.currentSession;
           if (!session || !session.question || !session.answer) return;
           if (session.question2) return;
