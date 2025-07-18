@@ -1968,7 +1968,7 @@ function getHtmlContent() {
             },
             {
               role: 'user',
-              parts: [{ text: '请为以上的一问一答生成一个简短的摘要，概括对话的主题，20字以内（不要有任何开场白和结尾，也不要任何格式，句中可以包含标点符号，但不要以标点符号结尾）' }]
+              parts: [{ text: '请为以上的一问一答生成一个简短的摘要，概括对话的主题，12字以内（不要有任何开场白和结尾，也不要任何格式，句中可以包含标点符号，但不要以标点符号结尾）' }]
             }
           ];
           fetch('/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key=' + this.apiKey, {
