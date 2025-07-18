@@ -9,7 +9,7 @@ const GEMINI_API_KEY_LIST = (GEMINI_API_KEYS || '').split(',');
 
 // 临时演示密码, 仅限于测试和演示使用, 每小时最多调用10次
 const DEMO_PASSWORD = getEnv('DEMO_PASSWORD') || 'fzzf0001';
-const DEMO_MAX_TIMES_PER_HOUR = getEnv('DEMO_MAX_TIMES_PER_HOUR') || 1;
+const DEMO_MAX_TIMES_PER_HOUR = getEnv('DEMO_MAX_TIMES_PER_HOUR') || 10;
 const demoMemory = { hour: 0, times: 0, maxTimes: DEMO_MAX_TIMES_PER_HOUR };
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com';
@@ -1800,11 +1800,10 @@ function getHtmlContent() {
               signal: this.abortController.signal
             }).catch(e => {
               throw e;
-            })
+            });
 
             if (!response.ok) {
               const errorData = await response.json().catch(e => ({}));
-              window.errorData = errorData;
               throw new Error(
                 errorData.error ||
                 ('HTTP ' + response.status + ': ' + response.statusText)
