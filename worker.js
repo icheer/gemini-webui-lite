@@ -7,9 +7,10 @@ const SECRET_PASSWORD = getEnv('SECRET_PASSWORD') || `yijiaren.${~~(Math.random(
 const GEMINI_API_KEYS = getEnv('GEMINI_API_KEYS') || 'AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,AIzayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy';
 const GEMINI_API_KEY_LIST = (GEMINI_API_KEYS || '').split(',');
 
-// 临时密码, 仅限于测试使用, 每小时最多调用10次
-const TEMP_PASSWORD = getEnv('TEMP_PASSWORD') || 'beijing001';
-const tempMemory = { hour: 0, times: 0, maxTimes: 10 };
+// 临时演示密码, 仅限于测试和演示使用, 每小时最多调用10次
+const DEMO_PASSWORD = getEnv('DEMO_PASSWORD') || 'fzzf0001';
+const DEMO_MAX_TIMES_PER_HOUR = getEnv('DEMO_MAX_TIMES_PER_HOUR') || 10;
+const demoMemory = { hour: 0, times: 0, maxTimes: DEMO_MAX_TIMES_PER_HOUR };
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com';
 const htmlContent = getHtmlContent();
@@ -71,22 +72,22 @@ async function handleRequest(request, env = {}) {
   } else if (apiKey === SECRET_PASSWORD) {
     apiKey = getRandomApiKey();
     urlSearch = urlSearch.replace(`key=${SECRET_PASSWORD}`, `key=${apiKey}`);
-  } else if (apiKey === TEMP_PASSWORD) {
+  } else if (apiKey === DEMO_PASSWORD) {
     // 临时密码, 仅限于测试使用, 每小时最多调用10次
     const hour = Math.floor(Date.now() / 3600000);
     // 检查当前小时是否超过最大调用次数
-    if (tempMemory.hour === hour) {
-      if (tempMemory.times >= tempMemory.maxTimes) {
+    if (demoMemory.hour === hour) {
+      if (demoMemory.times >= demoMemory.maxTimes) {
         return createErrorResponse('Exceeded maximum API calls for this hour', 429);
       }
     } else {
       // 重置计数
-      tempMemory.hour = hour;
-      tempMemory.times = 0;
+      demoMemory.hour = hour;
+      demoMemory.times = 0;
     }
-    tempMemory.times++;
+    demoMemory.times++;
     apiKey = getRandomApiKey();
-    urlSearch = urlSearch.replace(`key=${TEMP_PASSWORD}`, `key=${apiKey}`);
+    urlSearch = urlSearch.replace(`key=${DEMO_PASSWORD}`, `key=${apiKey}`);
   }
 
   // 3. 构建请求
@@ -1885,6 +1886,7 @@ function getHtmlContent() {
             if (error.name === 'AbortError') {
               this.errorMessage = '请求已取消';
             } else {
+              console.error('发送失败:', error, error.toString());
               this.errorMessage = '发送失败: ' + error.message;
 
               // 显示错误提示
