@@ -35,7 +35,7 @@ async function handleRequest(request, env = {}) {
     return new Response(htmlContent, {
       headers: {
         "Content-Type": "text/html;charset=UTF-8",
-        "Cache-Control": "public, max-age=86400" // 缓存1d
+        "Cache-Control": "public, max-age=43200" // 缓存12小时
       }
     });
   }
