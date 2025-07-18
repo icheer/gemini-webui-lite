@@ -1673,7 +1673,7 @@ function getHtmlContent() {
                   showConfirmButton: true,
                   confirmButtonText: '我知道了',
                   width: '92%',
-                  padding: '0.25em 0 1em',
+                  padding: '0.25em 0 2em',
                   customClass: {
                     htmlContainer: 'swal-image-container'
                   }
