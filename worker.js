@@ -8,7 +8,7 @@ const GEMINI_API_KEYS = getEnv('GEMINI_API_KEYS') || 'AIzaxxxxxxxxxxxxxxxxxxxxxx
 const GEMINI_API_KEY_LIST = (GEMINI_API_KEYS || '').split(',');
 
 // 临时演示密码, 仅限于测试和演示使用, 每小时最多调用15次
-const DEMO_PASSWORD = getEnv('DEMO_PASSWORD') || 'fzzf0001';
+const DEMO_PASSWORD = getEnv('DEMO_PASSWORD') || '';
 const DEMO_MAX_TIMES_PER_HOUR = getEnv('DEMO_MAX_TIMES_PER_HOUR') || 15;
 const demoMemory = { hour: 0, times: 0, maxTimes: DEMO_MAX_TIMES_PER_HOUR };
 
