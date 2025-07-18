@@ -1798,7 +1798,9 @@ function getHtmlContent() {
                 }
               }),
               signal: this.abortController.signal
-            });
+            }).catch(e => {
+              throw e;
+            })
 
             if (!response.ok) {
               const errorData = await response.json().catch(e => ({}));
@@ -1892,7 +1894,7 @@ function getHtmlContent() {
               // 显示错误提示
               Swal.fire({
                 title: '发送失败',
-                text: (error.name || '') + ' ' + error.message,
+                text: error.message,
                 icon: 'error',
                 confirmButtonText: '确定'
               });
