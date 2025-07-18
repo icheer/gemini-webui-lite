@@ -1294,14 +1294,8 @@ function getHtmlContent() {
           selectedModel: 'gemini-2.5-pro',
           availableModels: [
             { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
-            {
-              value: 'gemini-2.5-flash-preview-05-20',
-              label: 'Gemini 2.5 Flash Preview 05-20'
-            },
-            {
-              value: 'gemini-2.5-flash-lite-preview-06-17',
-              label: 'Gemini 2.5 Flash-Lite Preview 06-17'
-            }
+            { value: 'gemini-2.5-flash-preview-05-20', label: 'Gemini 2.5 Flash Preview 05-20' },
+            { value: 'gemini-2.5-flash-lite-preview-06-17', label: 'Gemini 2.5 Flash-Lite Preview 06-17' }
           ],
           sessions: [],
           currentSessionId: null,
@@ -1949,8 +1943,70 @@ function getHtmlContent() {
             this.isStreaming = false;
             this.streamingContent = '';
             this.abortController = null;
+            this.generateSessionSummary();
             // this.scrollToBottom();
           }
+        },
+
+        // 生成会话摘要
+        generateSessionSummary() {
+          const session = this.currentSession;
+          if (!session || !session.question || !session.answer) return;
+          if (session.question2) return;
+          const { id, question, answer } = session;
+          const questionText = question.length > 300 ? question.slice(0, 150) + '......' : question.slice(-150);
+          const answerText = answer.length > 300 ? answer.slice(0, 150) + '......' : answer.slice(-150);
+          const contents = [
+            {
+              role: 'user',
+              parts: [{ text: questionText }]
+            },
+            {
+              role: 'model',
+              parts: [{ text: answerText }]
+            },
+            {
+              role: 'user',
+              parts: [{ text: '请为以上对话生成一个简短的摘要，20字以内' }]
+            }
+          ];
+          fetch('/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key=' + this.apiKey, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              contents,
+              generationConfig: {
+                temperature: 1,
+                topP: 1,
+                maxOutputTokens: 100
+              }
+            })
+          })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                const summary = data.candidates[0].content.parts?.[0]?.text || '';
+                if (summary) {
+                  const item = this.sessions.find(s => s.id === id);
+                  if (item) {
+                    item.title = summary;
+                    this.saveData();
+                  }
+                }
+              } else {
+                throw new Error('未能生成摘要');
+              }
+            })
+            .catch(error => {
+              console.error('生成摘要失败:', error);
+            });
         },
 
         handleKeyDown(event) {
