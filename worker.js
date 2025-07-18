@@ -942,7 +942,8 @@ function getHtmlContent() {
       border-color: #a8edea;
     }
 
-    .copy-btn {
+    .copy-btn,
+    .reset-btn {
       background: none;
       border: 1px solid #e1e5e9;
       color: #666;
@@ -953,6 +954,11 @@ function getHtmlContent() {
       margin-left: 8px;
       opacity: 0;
       transition: all 0.2s;
+    }
+
+    .reset-btn {
+      padding: 3px 8px;
+      opacity: 1 !important;
     }
 
     .copy-btn:hover {
@@ -1087,7 +1093,11 @@ function getHtmlContent() {
         </div>
         <!-- 角色设定 -->
         <div class="role-setting">
-          <label for="rolePrompt" style="display: block; margin-bottom: 8px; font-weight: 500">角色设定 (可选):</label>
+          <label for="rolePrompt"
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 500">
+            <span>角色设定 (可选):</span>
+            <button v-if="globalRolePrompt" class="reset-btn" @click="clearRolePrompt" title="清空角色设定">清空</button>
+          </label>
           <textarea id="rolePrompt" v-model="globalRolePrompt" @input="updateGlobalRolePrompt" class="role-textarea"
             placeholder="输入系统提示词或角色设定...">
             </textarea>
@@ -1569,6 +1579,11 @@ function getHtmlContent() {
             'gemini_global_role_prompt',
             this.globalRolePrompt
           );
+        },
+
+        clearRolePrompt() {
+          this.globalRolePrompt = '';
+          this.updateGlobalRolePrompt();
         },
 
         checkMobile() {
