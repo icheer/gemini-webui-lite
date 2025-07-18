@@ -7,9 +7,9 @@ const SECRET_PASSWORD = getEnv('SECRET_PASSWORD') || `yijiaren.${~~(Math.random(
 const GEMINI_API_KEYS = getEnv('GEMINI_API_KEYS') || 'AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,AIzayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy';
 const GEMINI_API_KEY_LIST = (GEMINI_API_KEYS || '').split(',');
 
-// 临时演示密码, 仅限于测试和演示使用, 每小时最多调用10次
+// 临时演示密码, 仅限于测试和演示使用, 每小时最多调用15次
 const DEMO_PASSWORD = getEnv('DEMO_PASSWORD') || 'fzzf0001';
-const DEMO_MAX_TIMES_PER_HOUR = getEnv('DEMO_MAX_TIMES_PER_HOUR') || 10;
+const DEMO_MAX_TIMES_PER_HOUR = getEnv('DEMO_MAX_TIMES_PER_HOUR') || 15;
 const demoMemory = { hour: 0, times: 0, maxTimes: DEMO_MAX_TIMES_PER_HOUR };
 
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com';
@@ -73,7 +73,7 @@ async function handleRequest(request, env = {}) {
     apiKey = getRandomApiKey();
     urlSearch = urlSearch.replace(`key=${SECRET_PASSWORD}`, `key=${apiKey}`);
   } else if (apiKey === DEMO_PASSWORD) {
-    // 临时密码, 仅限于测试使用, 每小时最多调用10次
+    // 临时密码, 仅限于测试使用, 每小时最多调用指定次数
     const hour = Math.floor(Date.now() / 3600000);
     // 检查当前小时是否超过最大调用次数
     if (demoMemory.hour === hour) {
@@ -1953,21 +1953,21 @@ function getHtmlContent() {
           const session = this.currentSession;
           if (!session || !session.question || !session.answer) return;
           if (session.question2) return;
-          const { id, question, answer } = session;
-          const questionText = question.length > 300 ? question.slice(0, 150) + '......' : question.slice(-150);
-          const answerText = answer.length > 300 ? answer.slice(0, 150) + '......' : answer.slice(-150);
+          let { id, question, answer } = session;
+          question = question.length <= 300 ? question : question.slice(0, 150) + '......' + question.slice(-150);
+          answer = answer.length <= 300 ? answer : answer.slice(0, 150) + '......' + answer.slice(-150);
           const contents = [
             {
               role: 'user',
-              parts: [{ text: questionText }]
+              parts: [{ text: question }]
             },
             {
               role: 'model',
-              parts: [{ text: answerText }]
+              parts: [{ text: answer }]
             },
             {
               role: 'user',
-              parts: [{ text: '请为以上的一问一答生成一个简短的摘要，概括对话的主题，不要有任何开场白和结尾，也不要任何格式，20字以内，句中可以有标点符号，句尾不要有标点符号' }]
+              parts: [{ text: '请为以上的一问一答生成一个简短的摘要，概括对话的主题，20字以内（不要有任何开场白和结尾，也不要任何格式，句中可以有标点符号，句尾不要有标点）' }]
             }
           ];
           fetch('/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key=' + this.apiKey, {
