@@ -1881,6 +1881,7 @@ function getHtmlContent() {
             this.currentSession[answerKey] = this.streamingContent;
             this.saveData();
           } catch (error) {
+            window.sendError = error;
             console.error('Error:', error);
 
             if (error.name === 'AbortError') {
@@ -1892,7 +1893,7 @@ function getHtmlContent() {
               // 显示错误提示
               Swal.fire({
                 title: '发送失败',
-                text: error.message,
+                text: (error.name || '') + ' ' + error.message,
                 icon: 'error',
                 confirmButtonText: '确定'
               });
