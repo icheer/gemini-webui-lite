@@ -1806,8 +1806,8 @@ function getHtmlContent() {
               const errorData = await response.json().catch(e => ({}));
               window.errorData = errorData;
               throw new Error(
-                errorData.error?.message ||
-                'HTTP ' + response.status + ': ' + response.statusText
+                errorData.error ||
+                ('HTTP ' + response.status + ': ' + response.statusText)
               );
             }
 
