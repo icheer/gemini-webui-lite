@@ -1163,7 +1163,7 @@ function getHtmlContent() {
                 </span>
                 <div v-if="!isStreaming">
                   <button v-if="!currentSession.question2" class="copy-btn" title="删除并重新回答"
-                    @click="regenerateAnswer()">重答</button>
+                    @click="regenerateAnswer()">重新回答</button>
                   <button class="copy-btn" title="复制回答" @click="copyToClipboard(currentSession.answer)">
                     复制
                   </button>
@@ -1199,7 +1199,7 @@ function getHtmlContent() {
                   <small v-if="currentSession.model2">&emsp;{{ getModelName(currentSession.model2) }}</small>
                 </span>
                 <div v-if="!isStreaming">
-                  <button class="copy-btn" title="删除并重新回答" @click="regenerateAnswer()">重答</button>
+                  <button class="copy-btn" title="删除并重新回答" @click="regenerateAnswer()">重新回答</button>
                   <button class="copy-btn" title="复制回答" @click="copyToClipboard(currentSession.answer2)">
                     复制
                   </button>
