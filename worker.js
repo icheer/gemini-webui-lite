@@ -1212,10 +1212,13 @@ function getHtmlContent() {
                   回答
                   <small v-if="currentSession.model">&emsp;{{ getModelName(currentSession.model) }}</small>
                 </span>
-                <button v-if="currentSession.answer && !isStreaming" @click="copyToClipboard(currentSession.answer)"
-                  class="copy-btn" title="复制回答">
-                  复制
-                </button>
+                <div v-if="!isStreaming">
+                  <button v-if="!currentSession.question2" class="copy-btn" title="删除并重新回答"
+                    @click="regenerateAnswer()">重答</button>
+                  <button class="copy-btn" title="复制回答" @click="copyToClipboard(currentSession.answer)">
+                    复制
+                  </button>
+                </div>
               </h4>
               <div class="rendered-content markdown-body streaming-answer"
                 v-html="renderMarkdown(isStreaming && !currentSession.question2 ? streamingContent : currentSession.answer)">
@@ -1243,10 +1246,12 @@ function getHtmlContent() {
                   回答
                   <small v-if="currentSession.model2">&emsp;{{ getModelName(currentSession.model2) }}</small>
                 </span>
-                <button v-if="currentSession.answer2 && !isStreaming" @click="copyToClipboard(currentSession.answer2)"
-                  class="copy-btn" title="复制回答">
-                  复制
-                </button>
+                <div v-if="!isStreaming">
+                  <button class="copy-btn" title="删除并重新回答" @click="regenerateAnswer()">重答</button>
+                  <button class="copy-btn" title="复制回答" @click="copyToClipboard(currentSession.answer2)">
+                    复制
+                  </button>
+                </div>
               </h4>
               <div class="rendered-content markdown-body streaming-answer"
                 v-html="renderMarkdown(isStreaming ? streamingContent : currentSession.answer2)"></div>
@@ -1947,6 +1952,29 @@ function getHtmlContent() {
             this.generateSessionSummary();
             // this.scrollToBottom();
           }
+        },
+
+        // 删除最新的回答并重新回答
+        regenerateAnswer() {
+          if (this.isLoading || this.isStreaming) return;
+          if (!this.currentSession || !this.currentSession.answer) return;
+          // 如果是第二轮问答，删除第二轮回答
+          if (this.currentSession.answer2) {
+            this.currentSession.answer2 = '';
+            this.currentSession.createdAt2 = '';
+            this.currentSession.model2 = '';
+            this.messageInput = this.currentSession.question2 || '';
+            this.currentSession.question2 = '';
+          } else {
+            // 如果是第一轮问答，删除第一轮回答
+            this.currentSession.answer = '';
+            this.currentSession.createdAt = '';
+            this.currentSession.model = '';
+            this.messageInput = this.currentSession.question || '';
+            this.currentSession.question = '';
+          }
+          this.saveData();
+          this.sendMessage();
         },
 
         // 生成会话摘要
