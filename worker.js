@@ -1949,25 +1949,38 @@ function getHtmlContent() {
 
         // 删除最新的回答并重新回答
         regenerateAnswer() {
-          if (this.isLoading || this.isStreaming) return;
-          if (!this.currentSession || !this.currentSession.answer) return;
-          // 如果是第二轮问答，删除第二轮回答
-          if (this.currentSession.answer2) {
-            this.currentSession.answer2 = '';
-            this.currentSession.createdAt2 = '';
-            this.currentSession.model2 = '';
-            this.messageInput = this.currentSession.question2 || '';
-            this.currentSession.question2 = '';
-          } else {
-            // 如果是第一轮问答，删除第一轮回答
-            this.currentSession.answer = '';
-            this.currentSession.createdAt = '';
-            this.currentSession.model = '';
-            this.messageInput = this.currentSession.question || '';
-            this.currentSession.question = '';
-          }
-          this.saveData();
-          this.sendMessage();
+          // 二次确认
+          Swal.fire({
+            title: '确认删除回答',
+            text: '确定要删除这个回答并重新生成吗？',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '确定',
+            confirmButtonColor: '#d33',
+            cancelButtonText: '取消',
+            reverseButtons: true
+          }).then(result => {
+            if (!result.isConfirmed) return;
+            if (this.isLoading || this.isStreaming) return;
+            if (!this.currentSession || !this.currentSession.answer) return;
+            // 如果是第二轮问答，删除第二轮回答
+            if (this.currentSession.answer2) {
+              this.currentSession.answer2 = '';
+              this.currentSession.createdAt2 = '';
+              this.currentSession.model2 = '';
+              this.messageInput = this.currentSession.question2 || '';
+              this.currentSession.question2 = '';
+            } else {
+              // 如果是第一轮问答，删除第一轮回答
+              this.currentSession.answer = '';
+              this.currentSession.createdAt = '';
+              this.currentSession.model = '';
+              this.messageInput = this.currentSession.question || '';
+              this.currentSession.question = '';
+            }
+            this.saveData();
+            this.sendMessage();
+          });
         },
 
         // 生成会话摘要
