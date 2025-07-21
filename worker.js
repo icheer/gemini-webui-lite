@@ -1996,8 +1996,8 @@ function getHtmlContent() {
               session.title = '新会话';
               session.hasSummary = false;
             }
+            session.draft = questionText;
             this.messageInput = questionText;
-            this.draft = questionText;
             this.saveData();
           });
         },
