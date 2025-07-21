@@ -572,59 +572,10 @@ function getHtmlContent() {
       gap: 15px;
     }
 
-    .message {
-      max-width: 80%;
-      padding: 15px 20px;
-      border-radius: 18px;
-      word-wrap: break-word;
-      position: relative;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-    .message.user {
-      align-self: flex-end;
-      background: linear-gradient(135deg, #a8edea, #fed6e3);
-      color: #333;
-      margin-left: auto;
-    }
-
-    .message.assistant {
-      align-self: flex-start;
-      background: #f1f3f5;
-      color: #333;
-    }
-
     .message-content {
       flex: 1;
       line-height: 1.5;
       white-space: pre-wrap;
-    }
-
-    .message-delete {
-      background: none;
-      border: none;
-      color: rgba(0, 0, 0, 0.4);
-      cursor: pointer;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 12px;
-      margin-left: 8px;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .message:hover .message-delete {
-      opacity: 1;
-    }
-
-    .message.assistant .message-delete {
-      color: rgba(0, 0, 0, 0.4);
-    }
-
-    .message-delete:hover {
-      background: rgba(0, 0, 0, 0.1);
     }
 
     .input-area {
@@ -870,11 +821,6 @@ function getHtmlContent() {
         width: 100%;
       }
 
-      .message {
-        max-width: 90%;
-        padding: 12px 16px;
-      }
-
       .input-area {
         padding: 12px;
         gap: 6px;
@@ -966,8 +912,7 @@ function getHtmlContent() {
       border-color: #a8edea;
     }
 
-    .message:hover .copy-btn,
-    .session-content:hover .copy-btn {
+    .content-section:hover .copy-btn {
       opacity: 1;
     }
 
