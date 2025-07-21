@@ -1199,9 +1199,13 @@ function getHtmlContent() {
                   <small v-if="currentSession.createdAt">&emsp;{{ new
                     Date(currentSession.createdAt).toLocaleString() }}</small>
                 </span>
-                <button @click="copyToClipboard(currentSession.question)" class="copy-btn" title="复制问题">
-                  复制
-                </button>
+                <div>
+                  <button v-if="!isStreaming && !currentSession.question2" class="copy-btn" title="编辑问题"
+                    @click="editQuestion()">编辑</button>
+                  <button @click="copyToClipboard(currentSession.question)" class="copy-btn" title="复制问题">
+                    复制
+                  </button>
+                </div>
               </h4>
               <div class="rendered-content markdown-body" v-html="renderMarkdown(currentSession.question)"></div>
             </div>
@@ -1232,9 +1236,12 @@ function getHtmlContent() {
                   <small v-if="currentSession.createdAt2">&emsp;{{ new
                     Date(currentSession.createdAt2).toLocaleString() }}</small>
                 </span>
-                <button @click="copyToClipboard(currentSession.question2)" class="copy-btn" title="复制问题">
-                  复制
-                </button>
+                <div>
+                  <button v-if="!isStreaming" class="copy-btn" title="编辑追问" @click="editQuestion()">编辑</button>
+                  <button @click="copyToClipboard(currentSession.question2)" class="copy-btn" title="复制问题">
+                    复制
+                  </button>
+                </div>
               </h4>
               <div class="rendered-content markdown-body" v-html="renderMarkdown(currentSession.question2)"></div>
             </div>
@@ -1956,6 +1963,41 @@ function getHtmlContent() {
             this.generateSessionSummary();
             // this.scrollToBottom();
           }
+        },
+
+        // 编辑已经问过的问题
+        editQuestion() {
+          if (this.isLoading || this.isStreaming) return;
+          if (!this.currentSession) return;
+          // 二次确认
+          Swal.fire({
+            title: '确认编辑问题',
+            text: '您确定要编辑这个问题吗？',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '确定',
+            cancelButtonText: '取消'
+          }).then(result => {
+            if (!result.isConfirmed) return;
+            const session = this.currentSession;
+            const questionText = session.question2 || session.question || '';
+            if (session.question2) {
+              session.question2 = '';
+              session.createdAt2 = '';
+              session.model2 = '';
+              session.answer2 = '';
+            } else {
+              session.question = '';
+              session.createdAt = '';
+              session.model = '';
+              session.answer = '';
+              session.title = '新会话';
+              session.hasSummary = false;
+            }
+            this.messageInput = questionText;
+            this.draft = questionText;
+            this.saveData();
+          });
         },
 
         // 删除最新的回答并重新回答
