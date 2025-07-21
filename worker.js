@@ -1399,6 +1399,9 @@ function getHtmlContent() {
         window.removeEventListener('resize', this.checkMobile);
       },
       methods: {
+        sleep(ms) {
+          return new Promise(resolve => setTimeout(resolve, ms));
+        },
         async loadData() {
           // 加载 API Key
           this.apiKey =
@@ -1979,7 +1982,6 @@ function getHtmlContent() {
 
         // 生成会话摘要
         async generateSessionSummary() {
-          await this.$nextTick();
           const session = this.currentSession;
           if (!session || !session.question || !session.answer) return;
           if (session.hasSummary) return;
@@ -1997,7 +1999,7 @@ function getHtmlContent() {
             },
             {
               role: 'user',
-              parts: [{ text: '请为以上的一问一答生成一个简短的摘要，概括对话的主题，12字以内（不要有任何开场白和结尾，也不要任何格式，句中可以包含标点符号，但不要以标点符号结尾）' }]
+              parts: [{ text: '请为以上的一问一答生成一个简短的摘要，概括对话的主题，12字以内（不要有任何开场白、解释说明、结尾总结，也不要任何格式，句中可以包含标点符号，但不要以标点符号结尾）' }]
             }
           ];
           fetch('/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key=' + this.apiKey, {
@@ -2020,15 +2022,18 @@ function getHtmlContent() {
               }
               return response.json();
             })
-            .then(data => {
+            .then(async data => {
+              console.log(data);
               if (data.candidates && data.candidates[0] && data.candidates[0].content) {
                 let summary = data.candidates[0].content.parts?.[0]?.text || '';
                 if (summary) {
+                  await this.sleep(300);
                   const item = this.sessions.find(s => s.id === id);
                   if (item) {
                     if (summary.endsWith('。') || summary.endsWith('！') || summary.endsWith('？')) {
                       summary = summary.slice(0, -1);
                     }
+                    console.log(id, summary);
                     item.title = summary;
                     item.hasSummary = true;
                     this.saveData();
