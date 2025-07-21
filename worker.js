@@ -1972,7 +1972,7 @@ function getHtmlContent() {
           // 二次确认
           Swal.fire({
             title: '确认编辑问题',
-            text: '这会导致问题对应的回答被清空，您确定要编辑这个问题吗？',
+            text: '这会导致对应的回答被清空，您确定要编辑这个问题吗？',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: '确定',
