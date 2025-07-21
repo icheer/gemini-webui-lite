@@ -1490,6 +1490,7 @@ function getHtmlContent() {
             const newSession = {
               id: Date.now().toString(),
               title: '新会话',
+              hasSummary: false,
               model: '',
               model2: '',
               role: '',
@@ -1953,7 +1954,7 @@ function getHtmlContent() {
           await this.$nextTick();
           const session = this.currentSession;
           if (!session || !session.question || !session.answer) return;
-          if (session.question2) return;
+          if (session.hasSummary) return;
           let { id, question, answer } = session;
           question = question.length <= 300 ? question : question.slice(0, 150) + '......' + question.slice(-150);
           answer = answer.length <= 300 ? answer : answer.slice(0, 150) + '......' + answer.slice(-150);
@@ -2001,6 +2002,7 @@ function getHtmlContent() {
                       summary = summary.slice(0, -1);
                     }
                     item.title = summary;
+                    item.hasSummary = true;
                     this.saveData();
                   }
                 }
