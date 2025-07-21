@@ -1753,6 +1753,7 @@ function getHtmlContent() {
           // 如果当前会话已有回答，创建新会话
           if (this.currentSession && this.currentSession.answer2) {
             this.createNewSession();
+            return;
           }
 
           this.errorMessage = '';
@@ -2023,7 +2024,6 @@ function getHtmlContent() {
               return response.json();
             })
             .then(async data => {
-              console.log(data);
               if (data.candidates && data.candidates[0] && data.candidates[0].content) {
                 let summary = data.candidates[0].content.parts?.[0]?.text || '';
                 if (summary) {
@@ -2033,7 +2033,6 @@ function getHtmlContent() {
                     if (summary.endsWith('。') || summary.endsWith('！') || summary.endsWith('？')) {
                       summary = summary.slice(0, -1);
                     }
-                    console.log(id, summary);
                     item.title = summary;
                     item.hasSummary = true;
                     this.saveData();
