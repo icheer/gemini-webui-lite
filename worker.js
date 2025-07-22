@@ -1542,7 +1542,9 @@ function getHtmlContent() {
         },
 
         checkMobile() {
-          this.isMobile = window.innerWidth <= 768;
+          const isUaMobile = navigator.userAgent.toLowerCase().includes('mobile');
+          const isSizeMobile = Math.min(window.innerWidth, window.innerHeight) <= 768;
+          this.isMobile = isUaMobile && isSizeMobile;
           if (!this.isMobile) {
             this.showSidebar = false;
           }
