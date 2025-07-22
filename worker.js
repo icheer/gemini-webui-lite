@@ -927,7 +927,7 @@ function getHtmlContent() {
       border: 1px solid #e1e5e9;
     }
 
-    .content-section h4 {
+    .content-section>h4 {
       margin: 0 0 10px 0;
       color: #495057;
       font-size: 14px;
@@ -936,17 +936,17 @@ function getHtmlContent() {
       justify-content: space-between;
     }
 
-    .content-section h4 small {
+    .content-section>h4 small {
       color: #6c757d;
       font-size: 12px;
       font-weight: normal;
     }
 
-    .content-section h4:has(input:checked) {
+    .content-section>h4:has(input:checked) {
       margin-bottom: 0;
     }
 
-    .content-section h4:has(input:checked)+.rendered-content {
+    .content-section>h4:has(input:checked)+.rendered-content {
       display: none;
     }
 
