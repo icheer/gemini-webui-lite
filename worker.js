@@ -357,6 +357,25 @@ function getHtmlContent() {
       display: none;
     }
 
+    /* 滚动条颜色浅一些 */
+    *::-webkit-scrollbar {
+      width: 10px;
+      background-color: #f9fafb;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+      background-color: #d1d5db;
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background-color: #e5e7eb;
+      border-radius: 5px;
+    }
+
+    *::-webkit-scrollbar-track {
+      background-color: #f9fafb;
+    }
+
     button,
     label {
       user-select: none;
@@ -737,7 +756,7 @@ function getHtmlContent() {
       align-items: center;
       gap: 8px;
       color: #a8edea;
-      padding: 15px 20px;
+      padding: 4px 16px 8px;
     }
 
     .spinner {
