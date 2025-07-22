@@ -1501,7 +1501,8 @@ function getHtmlContent() {
           };
           // 如果是空会话, 直接删除
           const session = this.sessions.find(s => s.id === sessionId);
-          if (!session || !session.question) {
+          if (!session) return;
+          if (!session.question && !session.answer && !session.draft) {
             doDelete();
             return;
           }
