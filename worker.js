@@ -756,7 +756,7 @@ function getHtmlContent() {
       align-items: center;
       gap: 8px;
       color: #a8edea;
-      padding: 4px 16px 8px;
+      padding: 0px 16px 16px;
     }
 
     .spinner {
