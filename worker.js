@@ -358,21 +358,21 @@ function getHtmlContent() {
     }
 
     /* 滚动条颜色浅一些 */
-    *::-webkit-scrollbar {
+    body.pc *::-webkit-scrollbar {
       width: 10px;
       background-color: #f9fafb;
     }
 
-    *::-webkit-scrollbar-thumb:hover {
+    body.pc *::-webkit-scrollbar-thumb:hover {
       background-color: #d1d5db;
     }
 
-    *::-webkit-scrollbar-thumb {
+    body.pc *::-webkit-scrollbar-thumb {
       background-color: #e5e7eb;
       border-radius: 5px;
     }
 
-    *::-webkit-scrollbar-track {
+    body.pc *::-webkit-scrollbar-track {
       background-color: #f9fafb;
     }
 
@@ -1542,8 +1542,11 @@ function getHtmlContent() {
           const isUaMobile = navigator.userAgent.toLowerCase().includes('mobile');
           const isSizeMobile = window.innerWidth <= 768;
           this.isMobile = isUaMobile || isSizeMobile;
-          if (!this.isMobile) {
-            this.showSidebar = false;
+          if (this.isMobile) {
+            document.body.className = 'mobile';
+          } else {
+            document.body.className = 'pc';
+            this.showSidebar = true;
           }
         },
 
