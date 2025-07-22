@@ -392,6 +392,70 @@ function getHtmlContent() {
       flex-direction: column;
     }
 
+    .sidebar.mobile {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 1000;
+      padding: 20px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      backdrop-filter: blur(15px);
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 0;
+    }
+
+    .sidebar.mobile.show {
+      transform: translateX(0);
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .mobile-menu-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.35);
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 1001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #4a5568;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .mobile-menu-btn:hover {
+      /* background: #f7fafc; */
+      transform: scale(1.05);
+    }
+
     .main-chat {
       flex: 1;
       background: rgba(255, 255, 255, 0.95);
@@ -709,93 +773,6 @@ function getHtmlContent() {
         position: relative;
       }
 
-      .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        height: 100dvh;
-        z-index: 1000;
-        padding: 20px;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        backdrop-filter: blur(15px);
-        background: rgba(255, 255, 255, 0.98);
-        border-radius: 0;
-      }
-
-      .sidebar.show {
-        transform: translateX(0);
-      }
-
-      .sidebar-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        height: 100dvh;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-      }
-
-      .sidebar-overlay.show {
-        opacity: 1;
-        visibility: visible;
-      }
-
-      .mobile-menu-btn {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        width: 44px;
-        height: 44px;
-        background: rgba(255, 255, 255, 0.35);
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        cursor: pointer;
-        z-index: 1001;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        color: #4a5568;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        transition: all 0.2s ease;
-      }
-
-      .mobile-menu-btn:hover {
-        /* background: #f7fafc; */
-        transform: scale(1.05);
-      }
-
-      .sidebar-close-btn {
-        display: none;
-        /* display: flex; */
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        color: #4a5568;
-        border-radius: 6px;
-        transition: background 0.2s ease;
-      }
-
-      .sidebar-close-btn:hover {
-        background: rgba(0, 0, 0, 0.05);
-      }
-
       .main-chat {
         flex: 1;
         min-height: 0;
@@ -1029,7 +1006,7 @@ function getHtmlContent() {
     <div class="sidebar-overlay" :class="{ show: showSidebar && isMobile }" v-cloak @click="hideSidebar"></div>
     <div class="container">
       <!-- 侧边栏 -->
-      <div class="sidebar" :class="{ show: showSidebar || !isMobile }" v-cloak>
+      <div class="sidebar" :class="{ show: showSidebar || !isMobile, mobile: isMobile }" v-cloak>
         <!-- API Key 设置 -->
         <div class="api-key-section">
           <label for="apiKey" style="display: block; margin-bottom: 8px; font-weight: 500">API Key:</label>
