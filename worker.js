@@ -991,6 +991,7 @@ function getHtmlContent() {
 
     .rendered-content pre {
       background: #f8f9fa;
+      border: 1px solid #e1e5e9;
       padding: 15px;
       border-radius: 8px;
       overflow-x: auto;
