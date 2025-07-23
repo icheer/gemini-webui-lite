@@ -2031,7 +2031,6 @@ function getHtmlContent() {
               if (data.candidates && data.candidates[0] && data.candidates[0].content) {
                 let summary = data.candidates[0].content.parts?.[0]?.text || '';
                 if (summary) {
-                  await this.sleep(300);
                   const item = this.sessions.find(s => s.id === id);
                   if (item) {
                     if (summary.endsWith('。') || summary.endsWith('！') || summary.endsWith('？')) {
@@ -2039,6 +2038,7 @@ function getHtmlContent() {
                     }
                     item.title = summary;
                     item.hasSummary = true;
+                    await this.sleep(800);
                     this.saveData();
                   }
                 }
