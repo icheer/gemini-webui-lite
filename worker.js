@@ -1122,7 +1122,7 @@ function getHtmlContent() {
                 <span>
                   <label for="fold">
                     <span>角色设定　</span>
-                    <input type="checkbox" id="fold" />
+                    <input type="checkbox" id="fold" v-model="isFoldRole" />
                     <small>&nbsp;折叠</small>
                   </label>
                 </span>
@@ -1252,6 +1252,7 @@ function getHtmlContent() {
           ],
           sessions: [],
           currentSessionId: null,
+          isFoldRole: false,
           converter: null,
           globalRolePrompt: '',
           isMobile: window.innerWidth <= 768,
@@ -1380,6 +1381,7 @@ function getHtmlContent() {
           } else if (this.sessions.length > 0) {
             this.currentSessionId = this.sessions[0].id;
           }
+          this.autoFoldRolePrompt();
 
           // 加载选中的模型
           this.selectedModel =
@@ -1733,6 +1735,7 @@ function getHtmlContent() {
             session.answer = '';
             session.question2 = '';
             session.answer2 = '';
+            this.autoFoldRolePrompt();
           } else {
             session.createdAt2 = new Date().toISOString();
             session.model2 = this.selectedModel;
@@ -2049,6 +2052,16 @@ function getHtmlContent() {
             .catch(error => {
               console.error('生成摘要失败:', error);
             });
+        },
+
+        // 根据全局角色设定的字符长度决定是否折叠
+        autoFoldRolePrompt() {
+          const len = this.globalRolePrompt.length;
+          if (len > 150) {
+            this.isFoldRole = true;
+          } else {
+            this.isFoldRole = false;
+          }
         },
 
         handleKeyDown(event) {
