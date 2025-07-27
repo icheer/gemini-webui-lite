@@ -5,7 +5,10 @@ const isCf = !isDeno && typeof Request !== 'undefined' && typeof Request.cf !== 
 const SECRET_PASSWORD = getEnv('SECRET_PASSWORD') || `yijiaren.${~~(Math.random() * 1000)}`;
 // 这里是您的Gemini API密钥清单, 多个时使用逗号分隔, 会轮询(随机)使用, 同样也是优先使用环境变量, 其次使用代码中硬写的值, 注意不要在公开代码仓库中提交密钥的明文信息, 谨防泄露!!
 const GEMINI_API_KEYS = getEnv('GEMINI_API_KEYS') || 'AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,AIzayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy';
-const GEMINI_API_KEY_LIST = (GEMINI_API_KEYS || '').split(',');
+const GEMINI_API_KEY_LIST = (GEMINI_API_KEYS || '')
+  .split(',')
+  .map(i => i.trim())
+  .filter(i => i);
 
 // 临时演示密码, 仅限于测试和演示使用, 每小时最多调用15次
 const DEMO_PASSWORD = getEnv('DEMO_PASSWORD') || '';
