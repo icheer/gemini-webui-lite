@@ -1,16 +1,10 @@
-const isDeno = typeof Deno !== 'undefined';
-const isCf =
-  !isDeno &&
-  typeof Request !== 'undefined' &&
-  typeof Request.cf !== 'undefined';
+const isDeno = typeof Deno !== 'undefined'
+const isCf = !isDeno && typeof Request !== 'undefined' && typeof Request.cf !== 'undefined';
 // ⚠️注意: 仅当您有密码共享需求时才需要配置 SECRET_PASSWORD 和 GEMINI_API_KEYS 这两个环境变量! 否则您无需配置, 默认会使用WebUI填写的API Key进行gemini请求
-// 这里是您和您的朋友共享的密码, 优先使用环境变量, 双竖线后可以直接硬编码(例如 'yijiaren.308' 免得去管理面板配置环境变量了, 但极不推荐这么做!)
-const SECRET_PASSWORD =
-  getEnv('SECRET_PASSWORD') || `yijiaren.${~~(Math.random() * 1000)}`;
+// 这里是您和您的朋友共享的密码, 优先使用环境变量, 双竖线后可以直接硬编码(例如 'yijiaren.308' 免得去管理面板配置环境变量了, 但极不推荐这么做!) 
+const SECRET_PASSWORD = getEnv('SECRET_PASSWORD') || `yijiaren.${~~(Math.random() * 1000)}`;
 // 这里是您的Gemini API密钥清单, 多个时使用逗号分隔, 会轮询(随机)使用, 同样也是优先使用环境变量, 其次使用代码中硬写的值, 注意不要在公开代码仓库中提交密钥的明文信息, 谨防泄露!!
-const GEMINI_API_KEYS =
-  getEnv('GEMINI_API_KEYS') ||
-  'AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,AIzayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy';
+const GEMINI_API_KEYS = getEnv('GEMINI_API_KEYS') || 'AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,AIzayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy';
 const GEMINI_API_KEY_LIST = (GEMINI_API_KEYS || '')
   .split(',')
   .map(i => i.trim())
@@ -25,7 +19,7 @@ const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com';
 const htmlContent = getHtmlContent();
 
 // 获取环境变量
-const SERVER_TYPE = isDeno ? 'DENO' : isCf ? 'CF' : 'VPS';
+const SERVER_TYPE = isDeno ? 'DENO' : (isCf ? 'CF' : 'VPS');
 function getEnv(key) {
   if (isDeno) {
     return Deno.env.get(key) || '';
@@ -44,52 +38,40 @@ async function handleRequest(request, env = {}) {
   if (apiPath === '/' || apiPath === '/index.html') {
     return new Response(htmlContent, {
       headers: {
-        'Content-Type': 'text/html;charset=UTF-8',
-        'Cache-Control': 'public, max-age=43200' // 缓存12小时
+        "Content-Type": "text/html;charset=UTF-8",
+        "Cache-Control": "public, max-age=43200" // 缓存12小时
       }
     });
   }
 
   // 直接返回客户端的原本的请求信息(用于调试)
   if (apiPath === '/whoami') {
-    return new Response(
-      JSON.stringify({
-        serverType: SERVER_TYPE,
-        serverInfo: isDeno
-          ? {
-              target: Deno.build.target,
-              os: Deno.build.os,
-              arch: Deno.build.arch,
-              vendor: Deno.build.vendor
-            }
-          : request.cf || 'unknown',
-        url: request.url,
-        headers: Object.fromEntries(request.headers.entries()),
-        method: request.method,
-        bodyUsed: request.bodyUsed
-      }),
-      {
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
+    return new Response(JSON.stringify({
+      serverType: SERVER_TYPE,
+      serverInfo: isDeno ? {
+        target: Deno.build.target,
+        os: Deno.build.os,
+        arch: Deno.build.arch,
+        vendor: Deno.build.vendor,
+      } : request.cf || 'unknown',
+      url: request.url,
+      headers: Object.fromEntries(request.headers.entries()),
+      method: request.method,
+      bodyUsed: request.bodyUsed
+    }), {
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   if (!apiPath.startsWith('/v1beta/')) {
-    return createErrorResponse(
-      apiPath + 'Invalid API path. Must start with /v1beta/',
-      400
-    );
+    return createErrorResponse(apiPath + 'Invalid API path. Must start with /v1beta/', 400);
   }
 
   // 2. 获取和验证API密钥
-  let apiKey =
-    url.searchParams.get('key') || request.headers.get('x-goog-api-key');
+  let apiKey = url.searchParams.get('key') || request.headers.get('x-goog-api-key');
   let urlSearch = url.searchParams.toString();
   if (!apiKey) {
-    return createErrorResponse(
-      'Missing API key. Provide via ?key= parameter or x-goog-api-key header',
-      401
-    );
+    return createErrorResponse('Missing API key. Provide via ?key= parameter or x-goog-api-key header', 401);
   } else if (apiKey === SECRET_PASSWORD) {
     apiKey = getRandomApiKey();
     urlSearch = urlSearch.replace(`key=${SECRET_PASSWORD}`, `key=${apiKey}`);
@@ -99,10 +81,7 @@ async function handleRequest(request, env = {}) {
     // 检查当前小时是否超过最大调用次数
     if (demoMemory.hour === hour) {
       if (demoMemory.times >= demoMemory.maxTimes) {
-        return createErrorResponse(
-          'Exceeded maximum API calls for this hour',
-          429
-        );
+        return createErrorResponse('Exceeded maximum API calls for this hour', 429);
       }
     } else {
       // 重置计数
@@ -127,6 +106,7 @@ async function handleRequest(request, env = {}) {
       status: response.status,
       headers: response.headers
     });
+
   } catch (error) {
     console.error('Proxy request failed:', error);
     return createErrorResponse('Proxy request failed', 502);
@@ -659,16 +639,13 @@ function getHtmlContent() {
         cursor: pointer;
         margin-bottom: 20px;
         transition: all 0.2s ease;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
 
       .new-session-btn:hover {
-        transform: translateY(-2px) scale(1.1);
+        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
         border-color: #a8edea;
         color: #2d3748;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
       }
 
       .messages-container {
