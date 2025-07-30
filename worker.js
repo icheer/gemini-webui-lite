@@ -632,7 +632,7 @@ function getHtmlContent() {
         width: 100%;
         padding: 12px;
         background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-        color: #4a5568;
+        color: #333;
         border: none;
         border-radius: 8px;
         font-size: 14px;
