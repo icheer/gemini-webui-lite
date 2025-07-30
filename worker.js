@@ -644,7 +644,7 @@ function getHtmlContent() {
 
       .new-session-btn:hover {
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.12);
         color: #2d3748;
       }
 
