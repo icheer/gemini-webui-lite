@@ -633,6 +633,7 @@ function getHtmlContent() {
         padding: 12px;
         background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
         color: #4a5568;
+        border: none;
         border-radius: 8px;
         font-size: 14px;
         font-weight: 500;
@@ -644,7 +645,6 @@ function getHtmlContent() {
       .new-session-btn:hover {
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
-        border-color: #a8edea;
         color: #2d3748;
       }
 
