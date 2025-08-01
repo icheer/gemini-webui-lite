@@ -481,13 +481,15 @@ function getHtmlContent() {
       }
 
       .main-chat {
-        flex: 1;
+        flex: 1 1 0;
         background: rgba(255, 255, 255, 0.95);
         border-radius: 15px;
         backdrop-filter: blur(10px);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         display: flex;
         flex-direction: column;
+        min-width: 0; /* 防止flex子项撑大父容器 */
+        overflow: hidden; /* 确保内容不会溢出 */
       }
 
       .header {
@@ -651,10 +653,12 @@ function getHtmlContent() {
       .messages-container {
         flex: 1;
         overflow-y: auto;
+        overflow-x: hidden;
         padding: 8px;
         display: flex;
         flex-direction: column;
         gap: 15px;
+        min-width: 0; /* 防止内容撑大容器 */
       }
 
       .message-content {
@@ -968,15 +972,46 @@ function getHtmlContent() {
         background: #ffffff;
       }
 
-      .rendered-content {
-        position: relative;
-        line-height: 1.6;
-        overflow: hidden;
-      }
-
       .markdown-body {
         background: none;
         white-space-collapse: collapse;
+        overflow-x: auto;
+        max-width: 100%;
+        word-wrap: break-word;
+      }
+
+      /* 表格样式 - 防止溢出 */
+      .markdown-body table {
+        max-width: 100%;
+        width: 100%;
+        table-layout: auto;
+        border-collapse: collapse;
+        margin: 1em 0;
+        font-size: 0.9em;
+      }
+
+      .markdown-body th,
+      .markdown-body td {
+        padding: 8px 12px;
+        border: 1px solid #e1e5e9;
+        text-align: left;
+        vertical-align: top;
+        word-break: break-word;
+        min-width: 0;
+      }
+
+      .markdown-body th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+      }
+
+      /* 表格容器 - 提供水平滚动 */
+      .rendered-content {
+        position: relative;
+        line-height: 1.6;
+        overflow-x: auto;
+        overflow-y: visible;
+        max-width: 100%;
       }
 
       .rendered-content p {
@@ -1269,7 +1304,7 @@ function getHtmlContent() {
                   </span>
                   <div>
                     <button
-                      v-if="!isStreaming && !currentSession.question2"
+                      v-if="!isLoading && !isStreaming && !currentSession.question2"
                       class="copy-btn"
                       title="编辑问题"
                       @click="editQuestion()"
@@ -1340,7 +1375,7 @@ function getHtmlContent() {
                   </span>
                   <div>
                     <button
-                      v-if="!isStreaming"
+                      v-if="!isLoading && !isStreaming"
                       class="copy-btn"
                       title="编辑追问"
                       @click="editQuestion()"
