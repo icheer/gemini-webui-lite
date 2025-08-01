@@ -2383,7 +2383,7 @@ function getHtmlContent() {
             if (isAtBottom) {
               container.scrollTop = container.scrollHeight;
             }
-          }, 
+          },
 
           // 清空输入框
           clearInput() {
