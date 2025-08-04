@@ -629,7 +629,7 @@ function getHtmlContent() {
       .delete-btn {
         background: none;
         border: none;
-        color: #dc3545 !important;
+        color: #dc3545;
         cursor: pointer;
         padding: 4px 8px;
         border-radius: 4px;
@@ -640,15 +640,6 @@ function getHtmlContent() {
       .delete-btn:hover {
         opacity: 1;
         background: rgba(220, 53, 69, 0.1);
-      }
-
-      .session-item.active .delete-btn {
-        color: rgba(0, 0, 0, 0.6);
-      }
-
-      .session-item.active .delete-btn:hover {
-        color: rgba(0, 0, 0, 0.8);
-        background: rgba(0, 0, 0, 0.1);
       }
 
       .new-session-btn {
