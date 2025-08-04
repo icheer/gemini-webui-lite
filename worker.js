@@ -1156,9 +1156,11 @@ function getHtmlContent() {
               :key="session.id"
               @click="switchSession(session.id)"
               :class="['session-item', { active: currentSessionId === session.id }]"
-              :title="session.title || '新会话'"
+              :title="session.summary || session.title || '新会话'"
             >
-              <div class="session-title">{{ session.title || '新会话' }}</div>
+              <div class="session-title">
+                {{ session.summary || session.title || '新会话' }}
+              </div>
               <button
                 @click.stop="deleteSession(session.id)"
                 class="delete-btn"
@@ -1717,7 +1719,7 @@ function getHtmlContent() {
               const newSession = {
                 id: Date.now().toString(),
                 title: '新会话',
-                hasSummary: false,
+                summary: '',
                 model: '',
                 model2: '',
                 role: '',
@@ -2215,7 +2217,7 @@ function getHtmlContent() {
                 session.model = '';
                 session.answer = '';
                 session.title = '新会话';
-                session.hasSummary = false;
+                session.summary = '';
               }
               session.draft = questionText;
               this.messageInput = questionText;
@@ -2263,7 +2265,7 @@ function getHtmlContent() {
           async generateSessionSummary() {
             const session = this.currentSession;
             if (!session || !session.question || !session.answer) return;
-            if (session.hasSummary) return;
+            if (session.summary && session.question2) return;
             let { id, question, answer } = session;
             question =
               question.length <= 300
@@ -2335,10 +2337,10 @@ function getHtmlContent() {
                       ) {
                         summary = summary.slice(0, -1);
                       }
-                      item.title = summary;
-                      item.hasSummary = true;
-                      await this.sleep(800);
-                      this.saveData();
+                      item.summary = summary;
+                      this.sleep(1000).then(() => {
+                        this.saveData();
+                      });
                     }
                   }
                 } else {
