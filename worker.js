@@ -2354,7 +2354,7 @@ function getHtmlContent() {
 
           // 根据全局角色设定的字符长度决定是否折叠
           autoFoldRolePrompt() {
-            const len = this.globalRolePrompt.length;
+            const len = (this.currentSession.role || '').length;
             if (len > 150) {
               this.isFoldRole = true;
             } else {
