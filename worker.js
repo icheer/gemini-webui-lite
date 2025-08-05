@@ -970,10 +970,11 @@ function getHtmlContent() {
       .content-section > h4:has(input:checked) + .rendered-content:after {
         content: '';
         position: absolute;
+        z-index: 1;
         left: 0;
         right: 0;
         bottom: 0;
-        height: 1em;
+        height: 50%;
         background: linear-gradient(
           to bottom,
           rgba(255, 255, 255, 0) 0%,
