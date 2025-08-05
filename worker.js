@@ -967,8 +967,14 @@ function getHtmlContent() {
         text-overflow: ellipsis;
       }
 
-      .content-section > h4:has(input:checked) + .rendered-content:after {
+      .role-section {
+        position: relative;
+        background: #f8f9fa;
+      }
+
+      .role-section:has(input:checked):after {
         content: '';
+        display: block;
         position: absolute;
         z-index: 1;
         left: 0;
@@ -981,10 +987,6 @@ function getHtmlContent() {
           #f8f9fa 100%
         );
         pointer-events: none;
-      }
-
-      .role-section {
-        background: #f8f9fa;
       }
 
       .question-section {
