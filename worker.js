@@ -984,7 +984,7 @@ function getHtmlContent() {
         background: linear-gradient(
           to bottom,
           rgba(255, 255, 255, 0) 0%,
-          #f8f9fa 100%
+          #f8f9fa 85%
         );
         pointer-events: none;
       }
