@@ -960,12 +960,28 @@ function getHtmlContent() {
         font-weight: normal;
       }
 
-      .content-section > h4:has(input:checked) {
-        margin-bottom: 0;
+      .content-section > h4:has(input:checked) + .rendered-content {
+        position: relative;
+        /* 至多展示6行内容,溢出隐藏省略 */
+        max-height: 6em;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
-      .content-section > h4:has(input:checked) + .rendered-content {
-        display: none;
+      .content-section > h4:has(input:checked) + .rendered-content:after {
+        /* 垂直方向从透明到白色渐变遮罩层 */
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 1em;
+        background: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0) 0%,
+          #f8f9fa 100%
+        );
+        pointer-events: none;
       }
 
       .role-section {
