@@ -962,14 +962,12 @@ function getHtmlContent() {
 
       .content-section > h4:has(input:checked) + .rendered-content {
         position: relative;
-        /* 至多展示6行内容,溢出隐藏省略 */
-        max-height: 6em;
+        max-height: 9em;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
       .content-section > h4:has(input:checked) + .rendered-content:after {
-        /* 垂直方向从透明到白色渐变遮罩层 */
         content: '';
         position: absolute;
         left: 0;
