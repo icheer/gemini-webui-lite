@@ -962,7 +962,7 @@ function getHtmlContent() {
 
       .content-section > h4:has(input:checked) + .rendered-content {
         position: relative;
-        max-height: 9em;
+        max-height: 10em;
         overflow: hidden;
         text-overflow: ellipsis;
       }
