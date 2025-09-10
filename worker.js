@@ -41,6 +41,14 @@ async function handleRequest(request, env = {}) {
   const url = new URL(request.url);
   const apiPath = url.pathname.replace('/proxy', '');
 
+  if (apiPath === '/c6eb2e0b19e28c39b7ca8219e254bc63.txt') {
+    return new Response('b2c56a7c3b3c4b1ec9de4e56ed805567a3f8f626', {
+      headers: {
+        'Content-Type': 'text/html;charset=UTF-8'
+      }
+    });
+  }
+
   // 处理HTML页面请求
   if (apiPath === '/' || apiPath === '/index.html') {
     return new Response(htmlContent, {
@@ -58,11 +66,11 @@ async function handleRequest(request, env = {}) {
         serverType: SERVER_TYPE,
         serverInfo: isDeno
           ? {
-              target: Deno.build.target,
-              os: Deno.build.os,
-              arch: Deno.build.arch,
-              vendor: Deno.build.vendor
-            }
+            target: Deno.build.target,
+            os: Deno.build.os,
+            arch: Deno.build.arch,
+            vendor: Deno.build.vendor
+          }
           : request.cf || 'unknown',
         url: request.url,
         headers: Object.fromEntries(request.headers.entries()),
