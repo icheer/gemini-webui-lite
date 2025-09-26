@@ -1924,11 +1924,11 @@ function getHtmlContent() {
                 const isWechat =
                   userAgent.includes('micromessenger') &&
                   userAgent.includes('mobile');
-                if (isWechat) {
+                if (true || isWechat) {
                   // 微信环境：显示图片让用户长按保存
                   const imageDataUrl = canvas.toDataURL('image/png');
                   Swal.fire({
-                    title: '长按图片保存',
+                    title: '右键/长按图片保存',
                     html:
                       '<img src="' +
                       imageDataUrl +
