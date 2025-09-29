@@ -1986,9 +1986,12 @@ function getHtmlContent() {
           },
 
           getModelName(value) {
-            return (
-              this.availableModels.find(i => i.value === value)?.label || value
-            );
+            const model = this.availableModels.find(i => i.value === value);
+            if (model) {
+              return model.label;
+            } else {
+              return value;  
+            }
           },
 
           async sendMessage() {
@@ -2099,11 +2102,8 @@ function getHtmlContent() {
 
               if (!response.ok) {
                 const errorData = await response.json().catch(e => ({}));
-                throw new Error(
-                  errorData.error ||
-                    errorData?.[0]?.error?.message ||
-                    'HTTP ' + response.status + ': ' + response.statusText
-                );
+                const message = errorData.error || errorData[0] && errorData[0].error.message || ('HTTP ' + response.status + ': ' + response.statusText);
+                throw new Error(message);
               }
 
               // 开始流式读取
@@ -2145,8 +2145,8 @@ function getHtmlContent() {
                           data.candidates[0] &&
                           data.candidates[0].content
                         ) {
-                          const delta =
-                            data.candidates[0].content.parts?.[0]?.text || '';
+                          const content = data.candidates[0].content;
+                          const delta = content && content.parts[0] && content.parts[0].text || '';
                           if (delta) {
                             const shouldScroll = !this.streamingContent;
                             this.streamingContent += delta;
@@ -2341,8 +2341,8 @@ function getHtmlContent() {
                   data.candidates[0] &&
                   data.candidates[0].content
                 ) {
-                  let summary =
-                    data.candidates[0].content.parts?.[0]?.text || '';
+                  const content = data.candidates[0].content;
+                  let summary = content && content.parts[0] && content.parts[0].text || '';
                   if (summary) {
                     const item = this.sessions.find(s => s.id === id);
                     if (item) {
