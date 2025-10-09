@@ -2193,59 +2193,37 @@ function getHtmlContent() {
                   buffer = buffer.substring(1);
                 }
 
-                // 按逗号分割可能的JSON对象
-                let parts = buffer.split(',');
-                
-                // 保留最后一部分（可能不完整），处理前面的完整部分
-                buffer = parts.pop() || '';
-
-                for (let part of parts) {
-                  part = part.trim();
-                  if (!part) continue;
-
-                  try {
-                    const data = JSON.parse(part);
-
-                    if (
-                      data.candidates &&
-                      data.candidates[0] &&
-                      data.candidates[0].content
-                    ) {
-                      const content = data.candidates[0].content;
-                      const delta =
-                        (content &&
-                          content.parts[0] &&
-                          content.parts[0].text) ||
-                        '';
-                      if (delta) {
-                        const shouldScroll = !this.streamingContent;
-                        this.streamingContent += delta;
-                        if (shouldScroll) {
-                          this.scrollToBottom();
-                        }
+                // 使用花括号匹配来识别完整的JSON对象
+                let processed = true;
+                while (processed && buffer.length > 0) {
+                  processed = false;
+                  
+                  // 寻找第一个 {
+                  let startIdx = buffer.indexOf('{');
+                  if (startIdx === -1) break;
+                  
+                  // 从第一个 { 开始匹配花括号
+                  let braceCount = 0;
+                  let endIdx = -1;
+                  
+                  for (let i = startIdx; i < buffer.length; i++) {
+                    if (buffer[i] === '{') {
+                      braceCount++;
+                    } else if (buffer[i] === '}') {
+                      braceCount--;
+                      if (braceCount === 0) {
+                        endIdx = i;
+                        break;
                       }
                     }
-                  } catch (parseError) {
-                    // 如果解析失败，可能是不完整的JSON，重新加入缓冲区
-                    console.warn(
-                      'JSON解析失败，重新加入缓冲区:',
-                      parseError.message,
-                      'Part:',
-                      part.substring(0, 100) + '...'
-                    );
-                    buffer = part + ',' + buffer;
                   }
-                }
-
-                // 如果缓冲区中有完整的JSON对象，尝试解析
-                if (buffer.length > 0) {
-                  // 尝试解析缓冲区中可能的完整JSON
-                  let trimmed = buffer.trim();
                   
-                  // 如果以 } 结尾，可能是完整的JSON对象
-                  if (trimmed.endsWith('}')) {
+                  // 如果找到完整的JSON对象
+                  if (endIdx !== -1) {
+                    const jsonStr = buffer.substring(startIdx, endIdx + 1);
+                    
                     try {
-                      const data = JSON.parse(trimmed);
+                      const data = JSON.parse(jsonStr);
                       
                       if (
                         data.candidates &&
@@ -2266,10 +2244,15 @@ function getHtmlContent() {
                           }
                         }
                       }
-                      buffer = ''; // 清空已处理的缓冲区
+                      
+                      // 移除已处理的部分，继续处理剩余数据
+                      buffer = buffer.substring(endIdx + 1);
+                      processed = true;
+                      
                     } catch (parseError) {
-                      // 解析失败，保留缓冲区
-                      console.log('缓冲区JSON解析失败，等待更多数据:', parseError.message);
+                      console.warn('JSON解析失败:', parseError.message);
+                      // 如果解析失败，跳过这个JSON对象
+                      buffer = buffer.substring(endIdx + 1);
                     }
                   }
                 }
