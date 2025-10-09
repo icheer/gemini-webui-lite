@@ -2187,45 +2187,26 @@ function getHtmlContent() {
 
                 buffer += decoder.decode(value, { stream: true });
 
-                // 处理流式数据：格式为 [{...},{...},
-                // 移除开头的 [ 符号（如果存在）
-                if (buffer.startsWith('[')) {
-                  buffer = buffer.substring(1);
-                }
-
-                // 使用花括号匹配来识别完整的JSON对象
-                let processed = true;
-                while (processed && buffer.length > 0) {
-                  processed = false;
-                  
-                  // 寻找第一个 {
-                  let startIdx = buffer.indexOf('{');
-                  if (startIdx === -1) break;
-                  
-                  // 从第一个 { 开始匹配花括号
-                  let braceCount = 0;
-                  let endIdx = -1;
-                  
-                  for (let i = startIdx; i < buffer.length; i++) {
-                    if (buffer[i] === '{') {
-                      braceCount++;
-                    } else if (buffer[i] === '}') {
-                      braceCount--;
-                      if (braceCount === 0) {
-                        endIdx = i;
-                        break;
-                      }
-                    }
+                // 尝试解析整个缓冲区为JSON数组
+                try {
+                  // 如果缓冲区不是以 [ 开头，添加 [
+                  let jsonStr = buffer.trim();
+                  if (!jsonStr.startsWith('[')) {
+                    jsonStr = '[' + jsonStr;
                   }
                   
-                  // 如果找到完整的JSON对象
-                  if (endIdx !== -1) {
-                    const jsonStr = buffer.substring(startIdx, endIdx + 1);
-                    
-                    try {
-                      const data = JSON.parse(jsonStr);
-                      
+                  // 如果不是以 ] 结尾，添加 ]
+                  if (!jsonStr.endsWith(']')) {
+                    jsonStr = jsonStr + ']';
+                  }
+                  
+                  const dataArray = JSON.parse(jsonStr);
+                  
+                  if (Array.isArray(dataArray)) {
+                    // 处理数组中的每个对象
+                    for (const data of dataArray) {
                       if (
+                        data && 
                         data.candidates &&
                         data.candidates[0] &&
                         data.candidates[0].content
@@ -2244,16 +2225,19 @@ function getHtmlContent() {
                           }
                         }
                       }
-                      
-                      // 移除已处理的部分，继续处理剩余数据
-                      buffer = buffer.substring(endIdx + 1);
-                      processed = true;
-                      
-                    } catch (parseError) {
-                      console.warn('JSON解析失败:', parseError.message);
-                      // 如果解析失败，跳过这个JSON对象
-                      buffer = buffer.substring(endIdx + 1);
                     }
+                    
+                    // 解析成功，清空缓冲区
+                    buffer = '';
+                  }
+                } catch (parseError) {
+                  // JSON解析失败，说明数据不完整，继续等待更多数据
+                  // 不输出错误日志，这是正常现象
+                  
+                  // 但如果缓冲区太大，可能有问题，输出调试信息
+                  if (buffer.length > 50000) {
+                    console.warn('缓冲区过大，可能解析有问题:', buffer.substring(0, 200) + '...');
+                    buffer = ''; // 重置缓冲区避免内存问题
                   }
                 }
               }
