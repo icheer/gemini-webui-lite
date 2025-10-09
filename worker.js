@@ -1635,6 +1635,69 @@ function getHtmlContent() {
           window.removeEventListener('resize', this.checkMobile);
         },
         methods: {
+          // 备用的花括号解析方法，用于处理特殊情况
+          parseWithBraceMethod(inputBuffer) {
+            let buffer = inputBuffer;
+            let braceCount = 0;
+            let startIndex = -1;
+            let processed = false;
+
+            for (let i = 0; i < buffer.length; i++) {
+              if (buffer[i] === '{') {
+                if (braceCount === 0) {
+                  startIndex = i;
+                }
+                braceCount++;
+              } else if (buffer[i] === '}') {
+                braceCount--;
+                if (braceCount === 0 && startIndex !== -1) {
+                  // 找到完整的JSON对象
+                  const jsonStr = buffer.substring(startIndex, i + 1);
+
+                  try {
+                    const data = JSON.parse(jsonStr);
+
+                    if (
+                      data.candidates &&
+                      data.candidates[0] &&
+                      data.candidates[0].content
+                    ) {
+                      const content = data.candidates[0].content;
+                      const delta =
+                        (content &&
+                          content.parts[0] &&
+                          content.parts[0].text) ||
+                        '';
+                      if (delta) {
+                        const shouldScroll = !this.streamingContent;
+                        this.streamingContent += delta;
+                        if (shouldScroll) {
+                          this.scrollToBottom();
+                        }
+                      }
+                      processed = true;
+                    }
+                  } catch (parseError) {
+                    console.warn(
+                      '花括号解析方法也失败:',
+                      parseError,
+                      'JSON:',
+                      jsonStr
+                    );
+                  }
+
+                  // 移除已处理的部分
+                  buffer = buffer.substring(i + 1);
+                  i = -1; // 重置循环
+                  startIndex = -1;
+                  braceCount = 0;
+                }
+              }
+            }
+
+            return { buffer, processed };
+          },
+
           sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
           },
@@ -1990,7 +2053,7 @@ function getHtmlContent() {
             if (model) {
               return model.label;
             } else {
-              return value;  
+              return value;
             }
           },
 
@@ -2091,7 +2154,7 @@ function getHtmlContent() {
                 body: JSON.stringify({
                   contents,
                   generationConfig: {
-                    temperature: 1,
+                    temperature: 0.7,
                     topP: 1
                   }
                 }),
@@ -2102,7 +2165,10 @@ function getHtmlContent() {
 
               if (!response.ok) {
                 const errorData = await response.json().catch(e => ({}));
-                const message = errorData.error || errorData[0] && errorData[0].error.message || ('HTTP ' + response.status + ': ' + response.statusText);
+                const message =
+                  errorData.error ||
+                  (errorData[0] && errorData[0].error.message) ||
+                  'HTTP ' + response.status + ': ' + response.statusText;
                 throw new Error(message);
               }
 
@@ -2121,56 +2187,61 @@ function getHtmlContent() {
 
                 buffer += decoder.decode(value, { stream: true });
 
-                // 寻找完整的JSON对象
-                let braceCount = 0;
-                let startIndex = -1;
+                // 优先尝试按行解析（多数流式API使用换行分隔）
+                let lines = buffer.split('\n');
 
-                for (let i = 0; i < buffer.length; i++) {
-                  if (buffer[i] === '{') {
-                    if (braceCount === 0) {
-                      startIndex = i;
-                    }
-                    braceCount++;
-                  } else if (buffer[i] === '}') {
-                    braceCount--;
-                    if (braceCount === 0 && startIndex !== -1) {
-                      // 找到完整的JSON对象
-                      const jsonStr = buffer.substring(startIndex, i + 1);
+                // 保留最后一行（可能不完整），处理前面的完整行
+                buffer = lines.pop() || '';
 
-                      try {
-                        const data = JSON.parse(jsonStr);
+                for (let line of lines) {
+                  line = line.trim();
+                  if (!line) continue;
 
-                        if (
-                          data.candidates &&
-                          data.candidates[0] &&
-                          data.candidates[0].content
-                        ) {
-                          const content = data.candidates[0].content;
-                          const delta = content && content.parts[0] && content.parts[0].text || '';
-                          if (delta) {
-                            const shouldScroll = !this.streamingContent;
-                            this.streamingContent += delta;
-                            if (shouldScroll) {
-                              this.scrollToBottom();
-                            }
-                          }
-                        }
-                      } catch (parseError) {
-                        console.warn(
-                          '解析流式数据失败:',
-                          parseError,
-                          'JSON:',
-                          jsonStr
-                        );
-                      }
-
-                      // 移除已处理的部分
-                      buffer = buffer.substring(i + 1);
-                      i = -1; // 重置循环
-                      startIndex = -1;
-                      braceCount = 0;
-                    }
+                  // 移除可能的 data: 前缀
+                  if (line.startsWith('data: ')) {
+                    line = line.substring(6);
                   }
+
+                  if (line === '[DONE]' || line === 'data: [DONE]') {
+                    continue;
+                  }
+
+                  try {
+                    const data = JSON.parse(line);
+
+                    if (
+                      data.candidates &&
+                      data.candidates[0] &&
+                      data.candidates[0].content
+                    ) {
+                      const content = data.candidates[0].content;
+                      const delta =
+                        (content &&
+                          content.parts[0] &&
+                          content.parts[0].text) ||
+                        '';
+                      if (delta) {
+                        const shouldScroll = !this.streamingContent;
+                        this.streamingContent += delta;
+                        if (shouldScroll) {
+                          this.scrollToBottom();
+                        }
+                      }
+                    }
+                  } catch (parseError) {
+                    // 如果按行解析失败，将该行重新加入缓冲区等待处理
+                    console.warn(
+                      '逐行解析失败，将重新加入缓冲区:',
+                      parseError.message
+                    );
+                    buffer = line + '\n' + buffer;
+                  }
+                }
+
+                // 处理缓冲区中可能剩余的完整JSON对象
+                if (buffer.length > 0) {
+                  const result = this.parseWithBraceMethod(buffer);
+                  buffer = result.buffer; // 更新缓冲区
                 }
               }
 
@@ -2320,7 +2391,7 @@ function getHtmlContent() {
                 body: JSON.stringify({
                   contents,
                   generationConfig: {
-                    temperature: 1,
+                    temperature: 0.7,
                     topP: 1,
                     maxOutputTokens: 100
                   }
@@ -2342,7 +2413,9 @@ function getHtmlContent() {
                   data.candidates[0].content
                 ) {
                   const content = data.candidates[0].content;
-                  let summary = content && content.parts[0] && content.parts[0].text || '';
+                  let summary =
+                    (content && content.parts[0] && content.parts[0].text) ||
+                    '';
                   if (summary) {
                     const item = this.sessions.find(s => s.id === id);
                     if (item) {
