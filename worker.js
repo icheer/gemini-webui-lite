@@ -2188,7 +2188,7 @@ function getHtmlContent() {
                 buffer += decoder.decode(value, { stream: true });
 
                 // 优先尝试按行解析（多数流式API使用换行分隔）
-                let lines = buffer.split('\n');
+                let lines = buffer.split('\\n');
 
                 // 保留最后一行（可能不完整），处理前面的完整行
                 buffer = lines.pop() || '';
@@ -2234,7 +2234,7 @@ function getHtmlContent() {
                       '逐行解析失败，将重新加入缓冲区:',
                       parseError.message
                     );
-                    buffer = line + '\n' + buffer;
+                    buffer = line + '\\n' + buffer;
                   }
                 }
 
