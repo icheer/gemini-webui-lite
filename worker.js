@@ -2187,27 +2187,24 @@ function getHtmlContent() {
 
                 buffer += decoder.decode(value, { stream: true });
 
-                // 优先尝试按行解析（多数流式API使用换行分隔）
-                let lines = buffer.split('\\n');
+                // 处理流式数据：格式为 [{...},{...},
+                // 移除开头的 [ 符号（如果存在）
+                if (buffer.startsWith('[')) {
+                  buffer = buffer.substring(1);
+                }
 
-                // 保留最后一行（可能不完整），处理前面的完整行
-                buffer = lines.pop() || '';
+                // 按逗号分割可能的JSON对象
+                let parts = buffer.split(',');
+                
+                // 保留最后一部分（可能不完整），处理前面的完整部分
+                buffer = parts.pop() || '';
 
-                for (let line of lines) {
-                  line = line.trim();
-                  if (!line) continue;
-
-                  // 移除可能的 data: 前缀
-                  if (line.startsWith('data: ')) {
-                    line = line.substring(6);
-                  }
-
-                  if (line === '[DONE]' || line === 'data: [DONE]') {
-                    continue;
-                  }
+                for (let part of parts) {
+                  part = part.trim();
+                  if (!part) continue;
 
                   try {
-                    const data = JSON.parse(line);
+                    const data = JSON.parse(part);
 
                     if (
                       data.candidates &&
@@ -2229,19 +2226,52 @@ function getHtmlContent() {
                       }
                     }
                   } catch (parseError) {
-                    // 如果按行解析失败，将该行重新加入缓冲区等待处理
+                    // 如果解析失败，可能是不完整的JSON，重新加入缓冲区
                     console.warn(
-                      '逐行解析失败，将重新加入缓冲区:',
-                      parseError.message
+                      'JSON解析失败，重新加入缓冲区:',
+                      parseError.message,
+                      'Part:',
+                      part.substring(0, 100) + '...'
                     );
-                    buffer = line + '\\n' + buffer;
+                    buffer = part + ',' + buffer;
                   }
                 }
 
-                // 处理缓冲区中可能剩余的完整JSON对象
+                // 如果缓冲区中有完整的JSON对象，尝试解析
                 if (buffer.length > 0) {
-                  const result = this.parseWithBraceMethod(buffer);
-                  buffer = result.buffer; // 更新缓冲区
+                  // 尝试解析缓冲区中可能的完整JSON
+                  let trimmed = buffer.trim();
+                  
+                  // 如果以 } 结尾，可能是完整的JSON对象
+                  if (trimmed.endsWith('}')) {
+                    try {
+                      const data = JSON.parse(trimmed);
+                      
+                      if (
+                        data.candidates &&
+                        data.candidates[0] &&
+                        data.candidates[0].content
+                      ) {
+                        const content = data.candidates[0].content;
+                        const delta =
+                          (content &&
+                            content.parts[0] &&
+                            content.parts[0].text) ||
+                          '';
+                        if (delta) {
+                          const shouldScroll = !this.streamingContent;
+                          this.streamingContent += delta;
+                          if (shouldScroll) {
+                            this.scrollToBottom();
+                          }
+                        }
+                      }
+                      buffer = ''; // 清空已处理的缓冲区
+                    } catch (parseError) {
+                      // 解析失败，保留缓冲区
+                      console.log('缓冲区JSON解析失败，等待更多数据:', parseError.message);
+                    }
+                  }
                 }
               }
 
