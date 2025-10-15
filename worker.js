@@ -2431,7 +2431,7 @@ function getHtmlContent() {
                   role: 'user',
                   parts: [
                     {
-                      text: '#角色设定:\n' + this.globalRolePrompt
+                      text: '#角色设定:\\n' + this.globalRolePrompt
                     }
                   ]
                 },
