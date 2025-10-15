@@ -1510,7 +1510,7 @@ function getHtmlContent() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    [图片{{ index + 1 }}]
+                    图片{{ index + 1 }}
                   </a>
                 </div>
               </div>
@@ -2405,7 +2405,7 @@ function getHtmlContent() {
             // 保存图片信息 (包括 URL 和 mimeType)
             const userImages = this.uploadedImages.map(img => ({
               url: img.url,
-              mimeType: img.mimeType
+              mimeType: img.mimeType || img.file?.type || 'image/jpeg' // 确保有默认值
             }));
             this.clearInput();
             this.clearUploadedImages(); // 清空上传的图片
@@ -2484,10 +2484,10 @@ function getHtmlContent() {
                 for (const imageInfo of session.images) {
                   const imageUrl =
                     typeof imageInfo === 'string' ? imageInfo : imageInfo.url;
-                  const mimeType =
-                    typeof imageInfo === 'object'
-                      ? imageInfo.mimeType
-                      : 'image/jpeg';
+                  let mimeType = 'image/jpeg'; // 默认值
+                  if (typeof imageInfo === 'object' && imageInfo.mimeType) {
+                    mimeType = imageInfo.mimeType;
+                  }
                   const base64Data = await this.urlToBase64(imageUrl);
                   if (base64Data) {
                     parts.push({
@@ -2525,10 +2525,10 @@ function getHtmlContent() {
                 for (const imageInfo of session.images2) {
                   const imageUrl =
                     typeof imageInfo === 'string' ? imageInfo : imageInfo.url;
-                  const mimeType =
-                    typeof imageInfo === 'object'
-                      ? imageInfo.mimeType
-                      : 'image/jpeg';
+                  let mimeType = 'image/jpeg'; // 默认值
+                  if (typeof imageInfo === 'object' && imageInfo.mimeType) {
+                    mimeType = imageInfo.mimeType;
+                  }
                   const base64Data = await this.urlToBase64(imageUrl);
                   if (base64Data) {
                     parts.push({
