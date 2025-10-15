@@ -2711,18 +2711,12 @@ function getHtmlContent() {
               const session = this.currentSession;
               const questionText = session.question2 || session.question || '';
               if (session.question2) {
-                this.uploadedImages = (session.images2 || []).map(i => ({
-                  url: i
-                }));
                 session.question2 = '';
                 session.images2 = [];
                 session.createdAt2 = '';
                 session.model2 = '';
                 session.answer2 = '';
               } else {
-                this.uploadedImages = (session.images || []).map(i => ({
-                  url: i
-                }));
                 session.question = '';
                 session.images = [];
                 session.createdAt = '';
