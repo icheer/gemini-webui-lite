@@ -2235,9 +2235,9 @@ function getHtmlContent() {
           },
 
           // 预览图片
-          previewImage(imageUrl) {
+          previewImage(img) {
             Swal.fire({
-              imageUrl: imageUrl,
+              imageUrl: (img && img.url) || img,
               imageAlt: '图片预览',
               showCloseButton: true,
               showConfirmButton: false,
@@ -2436,7 +2436,8 @@ function getHtmlContent() {
             // 保存图片信息 (包括 URL 和 mimeType)
             const userImages = this.uploadedImages.map(img => ({
               url: img.url,
-              mimeType: img.mimeType || img.file?.type || 'image/jpeg' // 确保有默认值
+              mimeType:
+                img.mimeType || (img.file && img.file.type) || 'image/jpeg' // 确保有默认值
             }));
             this.clearInput();
             this.clearUploadedImages(); // 清空上传的图片
@@ -3033,5 +3034,6 @@ function getHtmlContent() {
     </script>
   </body>
 </html>
+
   `;
 }
