@@ -1506,7 +1506,7 @@ function getHtmlContent() {
                   <a
                     v-for="(img, index) in currentSession.images"
                     :key="index"
-                    :href="img"
+                    :href="typeof img === 'string' ? img : img.url"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -1592,7 +1592,7 @@ function getHtmlContent() {
                   <a
                     v-for="(img, index) in currentSession.images2"
                     :key="index"
-                    :href="img"
+                    :href="typeof img === 'string' ? img : img.url"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -2111,6 +2111,27 @@ function getHtmlContent() {
             this.updateGlobalRolePrompt();
           },
 
+          // 将图片 URL 转换为 base64
+          async urlToBase64(url) {
+            try {
+              const response = await fetch(url);
+              const blob = await response.blob();
+              return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  // 移除 data:image/jpeg;base64, 前缀，只保留 base64 数据
+                  const base64 = reader.result.split(',')[1];
+                  resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+              });
+            } catch (error) {
+              console.error('转换图片失败:', error);
+              return null;
+            }
+          },
+
           // 触发图片上传
           triggerImageUpload() {
             if (this.uploadedImages.length >= 2) return;
@@ -2166,7 +2187,8 @@ function getHtmlContent() {
               if (data.success && data.url) {
                 this.uploadedImages.push({
                   url: data.url,
-                  file: file
+                  file: file,
+                  mimeType: file.type || 'image/jpeg' // 保存文件的 MIME 类型
                 });
               } else {
                 throw new Error('上传失败: 返回数据格式错误');
@@ -2380,7 +2402,11 @@ function getHtmlContent() {
 
             this.errorMessage = '';
             const userMessage = this.messageInput.trim();
-            const userImages = [...this.uploadedImages.map(img => img.url)]; // 复制图片URL数组
+            // 保存图片信息 (包括 URL 和 mimeType)
+            const userImages = this.uploadedImages.map(img => ({
+              url: img.url,
+              mimeType: img.mimeType
+            }));
             this.clearInput();
             this.clearUploadedImages(); // 清空上传的图片
             // 清空当前会话的草稿
@@ -2446,23 +2472,32 @@ function getHtmlContent() {
               );
             }
 
-            // 继续组装QA消息 (支持图片)
+            // 继续组装QA消息 (支持图片) - 需要将图片 URL 转换为 base64
             if (session.question) {
               const parts = [];
               // 添加文本
               if (session.question.trim()) {
                 parts.push({ text: session.question });
               }
-              // 添加图片 (Gemini 格式)
+              // 添加图片 (Gemini 格式 - 需要 base64)
               if (session.images && session.images.length > 0) {
-                session.images.forEach(imageUrl => {
-                  parts.push({
-                    inlineData: {
-                      mimeType: 'image/jpeg',
-                      data: imageUrl // 对于 URL，Gemini 需要特殊处理
-                    }
-                  });
-                });
+                for (const imageInfo of session.images) {
+                  const imageUrl =
+                    typeof imageInfo === 'string' ? imageInfo : imageInfo.url;
+                  const mimeType =
+                    typeof imageInfo === 'object'
+                      ? imageInfo.mimeType
+                      : 'image/jpeg';
+                  const base64Data = await this.urlToBase64(imageUrl);
+                  if (base64Data) {
+                    parts.push({
+                      inlineData: {
+                        mimeType: mimeType,
+                        data: base64Data
+                      }
+                    });
+                  }
+                }
               }
               if (parts.length > 0) {
                 contents.push({
@@ -2485,16 +2520,25 @@ function getHtmlContent() {
               if (session.question2.trim()) {
                 parts.push({ text: session.question2 });
               }
-              // 添加图片
+              // 添加图片 (需要 base64)
               if (session.images2 && session.images2.length > 0) {
-                session.images2.forEach(imageUrl => {
-                  parts.push({
-                    inlineData: {
-                      mimeType: 'image/jpeg',
-                      data: imageUrl
-                    }
-                  });
-                });
+                for (const imageInfo of session.images2) {
+                  const imageUrl =
+                    typeof imageInfo === 'string' ? imageInfo : imageInfo.url;
+                  const mimeType =
+                    typeof imageInfo === 'object'
+                      ? imageInfo.mimeType
+                      : 'image/jpeg';
+                  const base64Data = await this.urlToBase64(imageUrl);
+                  if (base64Data) {
+                    parts.push({
+                      inlineData: {
+                        mimeType: mimeType,
+                        data: base64Data
+                      }
+                    });
+                  }
+                }
               }
               if (parts.length > 0) {
                 contents.push({
@@ -2667,14 +2711,18 @@ function getHtmlContent() {
               const session = this.currentSession;
               const questionText = session.question2 || session.question || '';
               if (session.question2) {
-                this.uploadedImages = session.images2 || [];
+                this.uploadedImages = (session.images2 || []).map(i => ({
+                  url: i
+                }));
                 session.question2 = '';
                 session.images2 = [];
                 session.createdAt2 = '';
                 session.model2 = '';
                 session.answer2 = '';
               } else {
-                this.uploadedImages = session.images || [];
+                this.uploadedImages = (session.images || []).map(i => ({
+                  url: i
+                }));
                 session.question = '';
                 session.images = [];
                 session.createdAt = '';
