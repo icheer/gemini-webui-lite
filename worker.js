@@ -1516,7 +1516,7 @@ function getHtmlContent() {
                     href="javascript:void(0)"
                     @click="previewImage(img)"
                   >
-                    图片{{ index + 1 }}
+                    🖼️图片{{ index + 1 }}
                   </a>
                 </div>
               </div>
@@ -1601,7 +1601,7 @@ function getHtmlContent() {
                     href="javascript:void(0)"
                     @click="previewImage(img)"
                   >
-                    图片{{ index + 1 }}
+                    🖼️图片{{ index + 1 }}
                   </a>
                 </div>
               </div>
