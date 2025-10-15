@@ -897,6 +897,13 @@ function getHtmlContent() {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
+      /* SweetAlert2 图片预览样式 */
+      .swal-image-preview {
+        max-width: 90vw !important;
+        max-height: 90vh !important;
+        object-fit: contain !important;
+      }
+
       .loading {
         display: flex;
         align-items: center;
@@ -1506,9 +1513,8 @@ function getHtmlContent() {
                   <a
                     v-for="(img, index) in currentSession.images"
                     :key="index"
-                    :href="typeof img === 'string' ? img : img.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="javascript:void(0)"
+                    @click="previewImage(img)"
                   >
                     图片{{ index + 1 }}
                   </a>
@@ -1592,9 +1598,8 @@ function getHtmlContent() {
                   <a
                     v-for="(img, index) in currentSession.images2"
                     :key="index"
-                    :href="typeof img === 'string' ? img : img.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="javascript:void(0)"
+                    @click="previewImage(img)"
                   >
                     [图片{{ index + 1 }}]
                   </a>
@@ -2227,6 +2232,20 @@ function getHtmlContent() {
           // 清空上传的图片
           clearUploadedImages() {
             this.uploadedImages = [];
+          },
+
+          // 预览图片
+          previewImage(imageUrl) {
+            Swal.fire({
+              imageUrl: imageUrl,
+              imageAlt: '图片预览',
+              showCloseButton: true,
+              showConfirmButton: false,
+              width: 'auto',
+              customClass: {
+                image: 'swal-image-preview'
+              }
+            });
           },
 
           checkMobile() {
@@ -3014,6 +3033,5 @@ function getHtmlContent() {
     </script>
   </body>
 </html>
-
   `;
 }
