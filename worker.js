@@ -2521,7 +2521,7 @@ function getHtmlContent() {
             } else {
               this.messageInput = '';
             }
-          }
+          },
 
           // 显示关于信息
           showAbout() {
