@@ -1191,7 +1191,7 @@ function getHtmlContent() {
         <div class="main-chat">
           <!-- 头部 -->
           <div class="header">
-            <h2>
+            <h2 @click="showAbout" style="cursor: pointer">
               <svg
                 height="24"
                 viewBox="0 0 24 24"
@@ -2521,6 +2521,49 @@ function getHtmlContent() {
             } else {
               this.messageInput = '';
             }
+          }
+
+          // 显示关于信息
+          showAbout() {
+            const isMobile = this.checkMobile();
+            Swal.fire({
+              title: '关于 Gemini WebUI Lite',
+              html: \`
+                <div style="text-align: left; padding: 10px;">
+                  <h3 style="margin: 0 0 10px; color: #333;">✨ 应用简介</h3>
+                  <p style="line-height: 1.6; color: #666;">
+                    这是一个简单易用的 Gemini API 代理服务，基于 Deno Deploy / Cloudflare Workers 部署。
+                    只需要一个域名和 Gemini API Key，即可免费为家人朋友提供 AI 问答服务。
+                  </p>
+                  
+                  <h3 style="margin: 20px 0 10px; color: #333;">🎯 核心功能</h3>
+                  <ul style="line-height: 1.8; color: #666; padding-left: 20px;">
+                    <li>提供标准的 Gemini API 代理端点</li>
+                    <li>内置精美的 Web 聊天界面</li>
+                    <li>支持密码保护，避免直接暴露 API Key</li>
+                    <li>流式响应，实时显示 AI 回答</li>
+                    <li>基于 IndexedDB 的本地历史记录存储</li>
+                    <li>支持多模型切换和自定义系统提示词</li>
+                    <li>一键生成问答截图，方便分享</li>
+                    <li>智能会话命名，便于查找管理</li>
+                  </ul>
+                  
+                  <h3 style="margin: 20px 0 10px; color: #333;">🔗 GitHub 仓库</h3>
+                  <p style="line-height: 1.6; color: #666;">
+                    <a href="https://github.com/icheer/gemini-webui-lite" target="_blank" style="color: #0066cc; text-decoration: none;">
+                      https://github.com/icheer/gemini-webui-lite
+                    </a>
+                  </p>
+                  
+                  <p style="margin: 20px 0 10px; color: #999; font-size: 0.9em;">
+                    请合理使用 AI 资源，避免滥用！
+                  </p>
+                </div>
+              \`,
+              confirmButtonText: '知道了',
+              confirmButtonColor: '#10a37f',
+              width: isMobile ? '90%' : '600px'
+            });
           }
         },
         watch: {
