@@ -59,6 +59,26 @@ async function handleRequest(request, env = {}) {
     });
   }
 
+  if (apiPath === '/favicon.svg') {
+    const svgContent = getSvgContent();
+    return new Response(svgContent, {
+      headers: {
+        'Content-Type': 'image/svg+xml;charset=UTF-8',
+        'Cache-Control': 'public, max-age=86400' // 缓存24小时
+      }
+    });
+  }
+
+  if (apiPath === '/manifest.json' || apiPath === '/site.webmanifest') {
+    const manifestContent = getManifestContent();
+    return new Response(manifestContent, {
+      headers: {
+        'Content-Type': 'application/manifest+json;charset=UTF-8',
+        'Cache-Control': 'public, max-age=86400' // 缓存24小时
+      }
+    });
+  }
+
   // 直接返回客户端的原本的请求信息(用于调试)
   if (apiPath === '/whoami') {
     return new Response(
@@ -66,11 +86,11 @@ async function handleRequest(request, env = {}) {
         serverType: SERVER_TYPE,
         serverInfo: isDeno
           ? {
-            target: Deno.build.target,
-            os: Deno.build.os,
-            arch: Deno.build.arch,
-            vendor: Deno.build.vendor
-          }
+              target: Deno.build.target,
+              os: Deno.build.os,
+              arch: Deno.build.arch,
+              vendor: Deno.build.vendor
+            }
           : request.cf || 'unknown',
         url: request.url,
         headers: Object.fromEntries(request.headers.entries()),
@@ -206,6 +226,98 @@ function getRandomApiKey() {
   const len = GEMINI_API_KEY_LIST.length;
   const idx = ~~(Math.random() * len);
   return GEMINI_API_KEY_LIST[idx];
+}
+
+function getSvgContent() {
+  return `
+<svg
+  height="24"
+  viewBox="0 0 24 24"
+  width="24"
+  xmlns="http://www.w3.org/2000/svg"
+  color="#fff"
+  style="flex: 0 0 auto; line-height: 1"
+>
+  <title>Gemini</title>
+  <path
+    d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z"
+    fill="#3186FF"
+  ></path>
+  <path
+    d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z"
+    fill="url(#lobe-icons-gemini-fill-0)"
+  ></path>
+  <path
+    d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z"
+    fill="url(#lobe-icons-gemini-fill-1)"
+  ></path>
+  <path
+    d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z"
+    fill="url(#lobe-icons-gemini-fill-2)"
+  ></path>
+  <defs>
+    <linearGradient
+      gradientUnits="userSpaceOnUse"
+      id="lobe-icons-gemini-fill-0"
+      x1="7"
+      x2="11"
+      y1="15.5"
+      y2="12"
+    >
+      <stop stop-color="#08B962"></stop>
+      <stop offset="1" stop-color="#08B962" stop-opacity="0"></stop>
+    </linearGradient>
+    <linearGradient
+      gradientUnits="userSpaceOnUse"
+      id="lobe-icons-gemini-fill-1"
+      x1="8"
+      x2="11.5"
+      y1="5.5"
+      y2="11"
+    >
+      <stop stop-color="#F94543"></stop>
+      <stop offset="1" stop-color="#F94543" stop-opacity="0"></stop>
+    </linearGradient>
+    <linearGradient
+      gradientUnits="userSpaceOnUse"
+      id="lobe-icons-gemini-fill-2"
+      x1="3.5"
+      x2="17.5"
+      y1="13.5"
+      y2="12"
+    >
+      <stop stop-color="#FABC12"></stop>
+      <stop offset=".46" stop-color="#FABC12" stop-opacity="0"></stop>
+    </linearGradient>
+  </defs>
+</svg>
+  `;
+}
+
+function getManifestContent() {
+  return `
+{
+  "name": "Gemini Chat",
+  "short_name": "Gemini",
+  "description": "Gemini Chat - Google AI 智能对话助手",
+  "start_url": "./gemini.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a73e8",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "lang": "zh-CN",
+  "dir": "ltr"
+}
+  `;
 }
 
 function getHtmlContent() {

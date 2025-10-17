@@ -1,0 +1,21 @@
+{
+  "name": "Gemini Chat",
+  "short_name": "Gemini",
+  "description": "Gemini Chat - Google AI 智能对话助手",
+  "start_url": "./gemini.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a73e8",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "lang": "zh-CN",
+  "dir": "ltr"
+}
