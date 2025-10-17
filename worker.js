@@ -312,7 +312,7 @@ function getManifestContent() {
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "favicon.svg",
+      "src": "favicon.svg?v=1",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
@@ -337,7 +337,7 @@ function getHtmlContent() {
     <title>✨ Gemini Chat</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1" />
     
     <!-- Web App Manifest -->
     <link rel="manifest" href="site.webmanifest" />
