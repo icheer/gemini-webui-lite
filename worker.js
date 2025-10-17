@@ -327,7 +327,22 @@ function getHtmlContent() {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1a73e8" />
+    <meta name="description" content="Gemini Chat - Google AI 智能对话助手" />
     <title>✨ Gemini Chat</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="site.webmanifest" />
+    
+    <!-- iOS Safari -->
+    <link rel="apple-touch-icon" href="favicon.svg" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Gemini Chat" />
+    
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/sweetalert2@11"></script>
     <script src="https://unpkg.com/showdown@2.1.0/dist/showdown.min.js"></script>
@@ -3103,7 +3118,7 @@ function getHtmlContent() {
                     这是一个简单易用的 Gemini API 代理服务，基于 Deno Deploy / Cloudflare Workers 部署。
                     只需要一个域名和 Gemini API Key，即可免费为家人朋友提供 AI 问答服务。
                   </p>
-                  
+
                   <h3 style="margin: 20px 0 10px; color: #333;">🎯 核心功能</h3>
                   <ul style="line-height: 1.8; color: #666; padding-left: 20px;">
                     <li>提供标准的 Gemini API 代理端点</li>
@@ -3115,14 +3130,14 @@ function getHtmlContent() {
                     <li>一键生成问答截图，方便分享</li>
                     <li>智能会话命名，便于查找管理</li>
                   </ul>
-                  
+
                   <h3 style="margin: 20px 0 10px; color: #333;">🔗 GitHub 仓库</h3>
                   <p style="line-height: 1.6; color: #666;">
                     <a href="https://github.com/icheer/gemini-webui-lite" target="_blank" style="color: #0066cc; text-decoration: none;">
                       https://github.com/icheer/gemini-webui-lite
                     </a>
                   </p>
-                  
+
                   <p style="margin: 20px 0 10px; color: #999; font-size: 0.9em;">
                     请合理使用 AI 资源，避免滥用！
                   </p>
