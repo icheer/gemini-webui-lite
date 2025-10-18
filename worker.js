@@ -305,7 +305,7 @@ function getManifestContent() {
   "name": "Gemini Chat",
   "short_name": "Gemini",
   "description": "Gemini Chat - Google AI 智能对话助手",
-  "start_url": "./gemini.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1a73e8",
