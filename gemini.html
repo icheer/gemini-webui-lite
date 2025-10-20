@@ -2240,7 +2240,10 @@
             }
 
             this.errorMessage = '';
-            const userMessage = this.messageInput.trim();
+            const userMessage = this.messageInput
+              .trim()
+              .replace(new RegExp('<', 'g'), '&lt;')
+              .replace(new RegExp('>', 'g'), '&gt;');
             // 保存图片信息 (包括 URL 和 mimeType)
             const userImages = this.uploadedImages.map(img => ({
               url: img.url,
