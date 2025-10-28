@@ -1,5 +1,20 @@
 # Gemini WebUI Lite - 自部署的 Gemini AI 代理服务
 
+> ⚠️ **项目已弃用 / DEPRECATED**
+> 
+> 本项目已停止维护，建议迁移到功能更强大的 [OpenAI WebUI Lite](https://github.com/icheer/openai-webui-lite) 项目。
+> 
+> **为什么要迁移？**
+> - ✅ **更广泛的模型支持**：完全兼容 Gemini 2.5 系列模型，只需配置环境变量 `MODEL_IDS=gemini-2.5-pro,gemini-2.5-flash,gemini-2.5-flash-lite` 即可
+> - ✅ **联网搜索功能**：集成 Tavily API，为 AI 提供实时网络信息
+> - ✅ **自定义界面**：支持自定义标题和 Favicon，打造个性化 AI 助手
+> - ✅ **更好的维护**：持续更新和功能增强
+> - ✅ **统一体验**：一套代码同时支持 OpenAI、Gemini、Qwen3 等多种 API
+> 
+> 👉 **立即迁移**：[https://github.com/icheer/openai-webui-lite](https://github.com/icheer/openai-webui-lite)
+
+---
+
 [![Deploy to Deno Deploy](https://img.shields.io/badge/Deploy%20to-Deno%20Deploy-00ADD8?style=flat-square&logo=deno)](https://dash.deno.com/)
 [![Deploy to Cloudflare Workers](https://img.shields.io/badge/Deploy%20to-Cloudflare%20Workers-orange?style=flat-square&logo=cloudflare)](https://workers.cloudflare.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](#license)
